@@ -52,7 +52,7 @@ class JessSuite extends FunSuite {
     assert(rules.check(jsWithNumbers) === Seq(Geldig()))
   }
 
-  ignore("JessRules should just die if the actual value doesn't match the expected one") {
+  test("JessRules should die if the actual value doesn't match the expected type") {
 
     import JessPath.root
     import JessRule._
@@ -65,7 +65,11 @@ class JessSuite extends FunSuite {
       that(path) { js: JsObject => js.exists } 
     }
 
-    assert(rules.check(jsWithNumbers) === Seq(Geldig()))
+    val thrown = intercept[IllegalArgumentException] {
+      rules.check(jsWithNumbers)
+    }
+
+    assert(thrown != null)
   }
 
   test("JessRules should be able to check a single rule in a Json string") {

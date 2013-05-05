@@ -45,8 +45,6 @@ object JessRule {
  */
 class JessRules(val rules: Seq[JessRule]) {
 
-  import scala.reflect._
-
   /**
    * Executes all rules on this JsObject and collects their validation results.
    * @return collected validation results
@@ -55,14 +53,26 @@ class JessRules(val rules: Seq[JessRule]) {
 
     Seq(rules: _*).map { rule =>
 
-      findField(jsRoot, rule.path) match {
-        case Some(field) =>
-          field match {
-            case input: rule.Input => rule(input)
-            case _ => Ongeldig(Map.empty)
+      rule match {
+        case objRule: JessObjectRule =>
+          findField(jsRoot, objRule.path) match {
+            case Some(field) =>
+              field match {
+                case input: JsObject => objRule(input)
+                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+              }
+            case None => Ongeldig(Map.empty)
           }
-        case None => Ongeldig(Map.empty)
-       }
+        case numRule: JessNumberRule =>
+          findField(jsRoot, numRule.path) match {
+            case Some(field) =>
+              field match {
+                case input: JsNumber => numRule(input)
+                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+              }
+            case None => Ongeldig(Map.empty)
+          }
+      }
     }
   }
 
@@ -73,7 +83,7 @@ class JessRules(val rules: Seq[JessRule]) {
    * @return collected validation results
    */
   def check(jsonString: String): Seq[ValidationResult] = {
-
+    
     val jsRoot: JsValue = JessPredef.parse(jsonString)
 
     jsRoot match {
