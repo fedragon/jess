@@ -13,7 +13,7 @@ class JessSuite extends FunSuite {
 
     val jsNumber = ("1", new JsNumber(123))
     val jsObject = ("2", new JsObject(Seq(("2.1", new JsNumber(456)))))
-    val jsArray =  ("3", new JsArray(Seq( new JsNumber(789))))
+    val jsArray =  ("3", new JsArray(Seq(new JsNumber(789))))
 
     val json2 = new JsObject(Seq(jsNumber, jsObject))
 
@@ -27,11 +27,13 @@ class JessSuite extends FunSuite {
     val path1 = root \ "1"
     val path2 = root \ "2" \ "2.1"
 
-    val executor = ensure(that(path1) { js: JsNumber => js.exists && js.isInt })
+    val rules = ensure {
+      that(path1) { js: JsNumber => js.exists && js.isInt }
+    }
 
     new Data {
-      assert(executor.findField(json2, path1) === Some(new JsNumber(123)))
-      assert(executor.findField(json2, path2) === Some(new JsNumber(456)))
+      assert(rules.findField(json2, path1) === Some(new JsNumber(123)))
+      assert(rules.findField(json2, path2) === Some(new JsNumber(456)))
     }
   }
 
@@ -72,7 +74,7 @@ class JessSuite extends FunSuite {
     import JessPath.root
     import JessRule._
     
-    val jsWithNumbers = "{ \"1\": 123, \"2\": 456 }"
+    val jsonNotMatching = "{ \"1\": 123, \"2\": 456 }"
 
     val path = root \ "2"
 
@@ -81,7 +83,7 @@ class JessSuite extends FunSuite {
     }
 
     val thrown = intercept[IllegalArgumentException] {
-      rules.check(jsWithNumbers)
+      rules.check(jsonNotMatching)
     }
 
     assert(thrown != null)
@@ -92,7 +94,7 @@ class JessSuite extends FunSuite {
     import JessPath.root
     import JessRule._
     
-    val jsWithNumbers = """{ 
+    val jsonString = """{ 
       "1": 123, 
       "2": { 
         "2.1": 456 
@@ -106,7 +108,7 @@ class JessSuite extends FunSuite {
       that(path1) { js: JsNumber => js.exists && js.isInt } 
     }
 
-    assert(rules.check(jsWithNumbers) === Seq(Geldig()))
+    assert(rules.check(jsonString) === Seq(Geldig()))
   }
 
   test("JessRules should be able to check multiple rules in a row") {
