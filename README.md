@@ -5,9 +5,12 @@ Minimal Scala library for creating and running user-defined data validation rule
 
 ### Overview
 
-Jess provides a DSL that allows you to create rules to validate the contents of a JSon document according to your own needs.
-Please note that this validation is not in terms of JSon syntax! Jess allows you to execute custom assertions on the data inside your JSon input by taking
-a number of user-defined rules and applying them: a rule is a function that is applied to a json path and returns the result of the validation.
+Jess provides a DSL that allows you to create a rule set to validate the contents of a JSon document according to your own needs.
+Jess works with path-based rules, which means: 
+* you don't need to provide class mappings for your JSon document;
+* you can implement just the rules you really care about;
+* you don't need to provide rules for all the fields in your JSon document (although you can).
+
 Jess relies on play.api.libs.json library.
 
 Example:
@@ -16,7 +19,7 @@ test("should be able to check a single rule") {
   import JessPath.root
   import JessRule._
   
-  val jsWithNumbers = 
+  val jsonString = 
   """{ 
     "1": 123, 
     "2": { 
@@ -32,7 +35,7 @@ test("should be able to check a single rule") {
       and  (path2) { js: JsObject => js.isNotEmpty }
   }
 
-  assert(rules.check(jsWithNumbers) === Seq(Geldig()))
+  assert(rules.check(jsonString) === Seq(Geldig()))
 }
 ```
 

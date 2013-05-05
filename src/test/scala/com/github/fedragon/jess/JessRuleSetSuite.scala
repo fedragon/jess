@@ -5,7 +5,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JessSuite extends FunSuite {
+class JessRuleSetSuite extends FunSuite {
 
   import JessPredef._
 
@@ -20,7 +20,7 @@ class JessSuite extends FunSuite {
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray))
   }
 
-  test("JessRules should be able to extract fields from a path") {
+  test("JessRuleSet should be able to extract fields from a path") {
     import JessPath.root
     import JessRule._
     
@@ -37,7 +37,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("JessRules should be able to check a single rule in a JsObject") {
+  test("JessRuleSet should be able to check a single rule in a JsObject") {
 
     import JessPath.root
     import JessRule._
@@ -53,7 +53,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("JessRules should fail if a rule is not verified") {
+  test("JessRuleSet should fail if a rule is not verified") {
 
     import JessPath.root
     import JessRule._
@@ -69,7 +69,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("JessRules should die if the actual value doesn't match the expected type") {
+  test("JessRuleSet should die if the actual value doesn't match the expected type") {
 
     import JessPath.root
     import JessRule._
@@ -89,7 +89,7 @@ class JessSuite extends FunSuite {
     assert(thrown != null)
   }
 
-  test("JessRules should be able to check a single rule in a Json string") {
+  test("JessRuleSet should be able to check a single rule in a Json string") {
 
     import JessPath.root
     import JessRule._
@@ -111,7 +111,7 @@ class JessSuite extends FunSuite {
     assert(rules.check(jsonString) === Seq(Geldig()))
   }
 
-  test("JessRules should be able to check multiple rules in a row") {
+  test("JessRuleSet should be able to check multiple rules in a row") {
 
     import JessPath.root
     import JessRule._
@@ -129,7 +129,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("JessRules should be able to check rules on all kinds of json values") {
+  test("JessRuleSet should be able to check rules on all kinds of json values") {
     
     import JessPath.root
     import JessRule._
