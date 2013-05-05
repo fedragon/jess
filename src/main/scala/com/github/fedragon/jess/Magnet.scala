@@ -31,4 +31,13 @@ object JessRulesMagnet {
       val path = p
     }
   }
+
+  implicit def fromJessArrayRule(f: JsArray => Boolean) = new JessRulesMagnet {
+    type Input = JsArray
+    type Output = JessArrayRule
+    def apply(p: JessPath) = new JessArrayRule {
+      val func = f
+      val path = p
+    }
+  }
 }

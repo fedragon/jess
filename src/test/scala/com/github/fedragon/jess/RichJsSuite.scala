@@ -50,15 +50,19 @@ class RichJsSuite extends FunSuite {
     assert(richJsObject.isNotEmpty === true)
   }
 
-  test("JessPath.\\ should concatenate paths correctly") {
-    import JessPath.root
-    import JessRule.stringToPath
+  test("RichJsArray.isEmpty should work") {
+    val richJsArray = new RichJsArray(new JsArray(Seq.empty))
 
-    val path = root \ "child"
-    val expected = JessPath (
-      Vector("", "child")
+    assert(richJsArray.isEmpty === true)
+  }
+
+  test("RichJsArray.isNotEmpty should work") {
+    val richJsArray = new RichJsArray(
+      new JsArray(
+        Seq(new JsNumber(1))
+      )
     )
 
-    assert(path === expected)
+    assert(richJsArray.isNotEmpty === true)
   }
 }

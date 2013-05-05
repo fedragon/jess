@@ -27,3 +27,16 @@ trait JessObjectRule extends JessRule {
       case false => Ongeldig(Map(path -> Seq("Failed")))
     }
 }
+
+/**
+ * Trait for JsArray rules.
+ */
+trait JessArrayRule extends JessRule {
+  type Input = JsArray
+
+  def apply(input: JsArray): ValidationResult =
+    func(input) match {
+      case true => Geldig()
+      case false => Ongeldig(Map(path -> Seq("Failed")))
+    }
+}

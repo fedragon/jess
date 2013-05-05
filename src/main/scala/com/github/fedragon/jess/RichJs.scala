@@ -65,35 +65,25 @@ class RichJsObject(js: JsObject) {
   def isNotEmpty: Boolean = this.exists && !js.fields.isEmpty
 }
 
-object JessPath {
-  /**
-   * Root
-   */
-  val root: JessPath = new JessPath(Vector(""))
-  
-  def apply(nodes: String*) = new JessPath(Vector(nodes: _*))
-}
-
 /**
- * Represents path inside a Json.
+ * Enricher class for JsObject.
  */
-case class JessPath(path: Vector[String]) {
+class RichJsArray(js: JsArray) {
+  /**
+   * Returns true if the value is not null, false otherwise.
+   * @return true if the value is not null, false otherwise.
+   */
+  def exists: Boolean = js.value != null
 
   /**
-   * Returns a new JessPath that represents this path with the new node appended.
-   * @return new JessPath that represents this path with the new node appended.
+   * Returns true if there aren't any children, false otherwise.
+   * @return true if there aren't any children, false otherwise.
    */
-  def \(node: String) = new JessPath(path :+ node)
-  
-  def foreach(f: Vector[String] => Unit) {
-    f(path)
-  }
+  def isEmpty: Boolean = this.exists && js.value.isEmpty
 
-  def isEmpty = path.isEmpty
-
-  def size = path.size
-
-  def head = path.head
-
-  def tail = JessPath(path.tail)
+  /**
+   * Returns true if there are some children, false otherwise.
+   * @return true if there are some children, false otherwise.
+   */
+  def isNotEmpty: Boolean = this.exists && !js.value.isEmpty
 }

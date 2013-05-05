@@ -27,4 +27,5 @@ object JessPredef {
   type JsValue  = play.api.libs.json.JsValue
   type JsNumber = play.api.libs.json.JsNumber
   type JsObject = play.api.libs.json.JsObject
+  type JsArray  = play.api.libs.json.JsArray
 }

@@ -18,8 +18,9 @@ trait JessRule {
 object JessRule {
   // Implicit conversions
   implicit def stringToPath(input: String) = JessPath(input)
-  implicit def jsNumberToRichJsNumber(input: JsNumber) = new RichJsNumber(input)
-  implicit def jsObjectToRichJsObject(input: JsObject) = new RichJsObject(input)
+  implicit def jsNumberToRichJsNumber (input: JsNumber) = new RichJsNumber(input)
+  implicit def jsObjectToRichJsObject (input: JsObject) = new RichJsObject(input)
+  implicit def jsArrayToRichJsArray   (input: JsArray)  = new RichJsArray(input)
 
   /**
    * Wraps the rules in a JessRules.
@@ -72,6 +73,16 @@ class JessRules(val rules: Seq[JessRule]) {
               }
             case None => Ongeldig(Map.empty)
           }
+        case arrayRule: JessArrayRule =>
+          findField(jsRoot, arrayRule.path) match {
+            case Some(field) =>
+              field match {
+                case input: JsArray => arrayRule(input)
+                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+              }
+            case None => Ongeldig(Map.empty)
+          }
+        case unsupportedRule @ _ => throw new IllegalArgumentException(s"Unsupported rule: ${unsupportedRule}")
       }
     }
   }
@@ -83,7 +94,7 @@ class JessRules(val rules: Seq[JessRule]) {
    * @return collected validation results
    */
   def check(jsonString: String): Seq[ValidationResult] = {
-    
+
     val jsRoot: JsValue = JessPredef.parse(jsonString)
 
     jsRoot match {
@@ -126,6 +137,7 @@ class JessRules(val rules: Seq[JessRule]) {
       }
     }
     
+    // The first element in the path is the root, so we drop it
     find(root, path.tail)
   }
 }
