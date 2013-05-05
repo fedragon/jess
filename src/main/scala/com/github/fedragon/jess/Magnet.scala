@@ -14,7 +14,7 @@ sealed trait JessRulesMagnet {
 object JessRulesMagnet {
 
   // Implicit conversions
-  implicit def fromJessNumberRule(f: JsNumber => Boolean) = new JessRulesMagnet {
+  implicit def toJessNumberRule(f: JsNumber => Boolean) = new JessRulesMagnet {
     type Input = JsNumber
     type Output = JessNumberRule
     def apply(p: JessPath) = new JessNumberRule {
@@ -23,7 +23,7 @@ object JessRulesMagnet {
     }
   }
 
-  implicit def fromJessObjectRule(f: JsObject => Boolean) = new JessRulesMagnet {
+  implicit def toJessObjectRule(f: JsObject => Boolean) = new JessRulesMagnet {
     type Input = JsObject
     type Output = JessObjectRule
     def apply(p: JessPath) = new JessObjectRule {
@@ -32,7 +32,7 @@ object JessRulesMagnet {
     }
   }
 
-  implicit def fromJessArrayRule(f: JsArray => Boolean) = new JessRulesMagnet {
+  implicit def toJessArrayRule(f: JsArray => Boolean) = new JessRulesMagnet {
     type Input = JsArray
     type Output = JessArrayRule
     def apply(p: JessPath) = new JessArrayRule {

@@ -23,4 +23,11 @@ class RulesLibSuite extends FunSuite {
     assert(obj.isEmpty === true)
   }
 
+  test("JessArrayRule should be able to apply rules") {
+    import JessRule._
+
+    val array = new JsArray(Seq.empty)
+    assert(array.isEmpty === true)
+  }
+
 }

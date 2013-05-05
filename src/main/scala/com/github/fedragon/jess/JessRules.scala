@@ -12,7 +12,11 @@ trait JessRule {
 
   val path: JessPath
 
-  def apply(input: Input): ValidationResult
+  def apply(input: Input): ValidationResult =
+    func(input) match {
+      case true => Geldig()
+      case false => Ongeldig(Map(path -> Seq(s"Rule not verified for input: ${input}")))
+    }
 }
 
 object JessRule {

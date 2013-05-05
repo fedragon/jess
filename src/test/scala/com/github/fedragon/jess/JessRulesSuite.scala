@@ -51,6 +51,22 @@ class JessSuite extends FunSuite {
     }
   }
 
+  test("JessRules should fail if a rule is not verified") {
+
+    import JessPath.root
+    import JessRule._
+
+    val path1 = root \ "1"
+
+    val rules = ensure { 
+      that(path1) { js: JsNumber => !js.exists }
+    }
+
+    new Data {
+      assert(rules.check(json2) === Seq(Ongeldig(Map(path1 -> Seq("Rule not verified for input: 123")))))
+    }
+  }
+
   test("JessRules should die if the actual value doesn't match the expected type") {
 
     import JessPath.root
@@ -93,7 +109,7 @@ class JessSuite extends FunSuite {
     assert(rules.check(jsWithNumbers) === Seq(Geldig()))
   }
 
-  test("should be able to check multiple rules in a row") {
+  test("JessRules should be able to check multiple rules in a row") {
 
     import JessPath.root
     import JessRule._
@@ -111,7 +127,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("should be able to check rules on all kinds of json values") {
+  test("JessRules should be able to check rules on all kinds of json values") {
     
     import JessPath.root
     import JessRule._
