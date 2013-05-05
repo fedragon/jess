@@ -12,7 +12,7 @@ object JessPredef {
   /**
    * Valid result
    */
-  case class Geldig() extends ValidationResult
+  case class Geldig(path: JessPath) extends ValidationResult
   /**
    * Invalid result
    */

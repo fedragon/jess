@@ -14,7 +14,7 @@ trait JessRule {
 
   def apply(input: Input): ValidationResult =
     func(input) match {
-      case true => Geldig()
+      case true => Geldig(path)
       case false => Ongeldig(Map(path -> Seq(s"Rule not verified for input: ${input}")))
     }
 }
@@ -56,39 +56,46 @@ class JessRuleSet(val rules: Seq[JessRule]) {
    */
   def check(jsRoot: JsObject): Seq[ValidationResult] = {
 
-    Seq(rules: _*).map { rule =>
+    def fieldNotFound(path: JessPath) = Ongeldig(Map(path -> Seq(s"Field not found at path: ${path}")))
+    def invalidInput(input: JsValue) = s"Invalid input: ${input}"
+    def unsupportedRule(rule: JessRule) = s"Unsupported rule: ${rule}"
+
+    val result = rules.map { rule =>
+      val path = rule.path
 
       rule match {
         case objRule: JessObjectRule =>
-          findField(jsRoot, objRule.path) match {
+          findField(jsRoot, path) match {
             case Some(field) =>
               field match {
                 case input: JsObject => objRule(input)
-                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
               }
-            case None => Ongeldig(Map.empty)
+            case None => fieldNotFound(path)
           }
         case numRule: JessNumberRule =>
           findField(jsRoot, numRule.path) match {
             case Some(field) =>
               field match {
                 case input: JsNumber => numRule(input)
-                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
               }
-            case None => Ongeldig(Map.empty)
+            case None => fieldNotFound(path)
           }
         case arrayRule: JessArrayRule =>
           findField(jsRoot, arrayRule.path) match {
             case Some(field) =>
               field match {
                 case input: JsArray => arrayRule(input)
-                case wrong @ _ => throw new IllegalArgumentException(s"Invalid input: ${wrong}")
+                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
               }
-            case None => Ongeldig(Map.empty)
+            case None => fieldNotFound(path)
           }
-        case unsupportedRule @ _ => throw new IllegalArgumentException(s"Unsupported rule: ${unsupportedRule}")
+        case rule @ _ => throw new IllegalArgumentException(unsupportedRule(rule))
       }
     }
+
+    result.toSeq
   }
 
   /**
@@ -111,8 +118,8 @@ class JessRuleSet(val rules: Seq[JessRule]) {
 
     def find(node: JsObject, p: JessPath): Option[JsValue] = {
 
-      def filter(seq: Seq[(String, JsValue)], needle: String)(f: JsValue => Option[JsValue]): Option[JsValue] = {
-        val children = seq.filter(f => f._1 == needle)
+      def filter(haystack: Seq[(String, JsValue)], needle: String)(f: JsValue => Option[JsValue]): Option[JsValue] = {
+        val children = haystack.filter(f => f._1 == needle)
 
         if(children.isEmpty) None
         else {
@@ -122,26 +129,22 @@ class JessRuleSet(val rules: Seq[JessRule]) {
           }
         }
       }
-      
-      val thePath = p
 
-      if (thePath.isEmpty) None
-      else if(thePath.size == 1) {
-        filter(node.fields, thePath.head) { obj => Some(obj) }
+      if (p.isEmpty) None
+      else if(p.size == 1) {
+        filter(node.fields, p.head) { obj => Some(obj) }
       }
       else {
-        filter(node.fields, thePath.head) { value => 
+        filter(node.fields, p.head) { value => 
           value match {
-            case obj: JsObject => find(obj, thePath.tail)
+            case obj: JsObject => find(obj, p.tail)
             case _ => throw new IllegalArgumentException("Invalid path")
           }
-          
         }
-        
       }
     }
     
-    // The first element in the path is the root, so we drop it
+    // The root of the path is just a placeholder, so I drop it
     find(root, path.tail)
   }
 }

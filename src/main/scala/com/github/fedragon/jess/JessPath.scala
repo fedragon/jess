@@ -33,4 +33,6 @@ case class JessPath(path: Vector[String]) {
   def head = path.head
 
   def tail = JessPath(path.tail)
+
+  override def toString = path.tail.mkString("/", "~", "")
 }

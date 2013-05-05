@@ -49,7 +49,23 @@ class JessRuleSetSuite extends FunSuite {
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Geldig()))
+      assert(rules.check(json2) === Seq(Geldig(path1)))
+    }
+  }
+
+  test("JessRuleSet should fail if a path is not found") {
+
+    import JessPath.root
+    import JessRule._
+
+    val path = root \ "9"
+
+    val rules = ensure { 
+      that(path) { js: JsNumber => true }
+    }
+
+    new Data {
+      assert(rules.check(json2) === Seq(Ongeldig(Map(path -> Seq(s"Field not found at path: ${path}")))))
     }
   }
 
@@ -58,10 +74,28 @@ class JessRuleSetSuite extends FunSuite {
     import JessPath.root
     import JessRule._
 
-    val path1 = root \ "1"
+    val path = root \ "1"
 
     val rules = ensure { 
-      that(path1) { js: JsNumber => !js.exists }
+      that(path) { js: JsNumber => !js.exists }
+    }
+
+    new Data {
+      assert(rules.check(json2) === Seq(Ongeldig(Map(path -> Seq("Rule not verified for input: 123")))))
+    }
+  }
+
+  test("JessRuleSet should fail if some rules are not verified") {
+
+    import JessPath.root
+    import JessRule._
+
+    val path1 = root \ "1"
+    val path2 = root \ "2"
+
+    val rules = ensure { 
+        that(path1) { js: JsNumber => !js.exists }
+        and (path2) { js: JsObject => !js.exists }
     }
 
     new Data {
@@ -69,12 +103,15 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should die if the actual value doesn't match the expected type") {
+  test("JessRuleSet should fail if the actual value doesn't match the expected type") {
 
     import JessPath.root
     import JessRule._
     
-    val jsonNotMatching = "{ \"1\": 123, \"2\": 456 }"
+    val mismatchingInput = new JsNumber(456)
+    val mismatchingJson = new JsObject(
+      Seq(("1", new JsNumber(123)), ("2", mismatchingInput))
+    )
 
     val path = root \ "2"
 
@@ -82,11 +119,7 @@ class JessRuleSetSuite extends FunSuite {
       that(path) { js: JsObject => js.exists } 
     }
 
-    val thrown = intercept[IllegalArgumentException] {
-      rules.check(jsonNotMatching)
-    }
-
-    assert(thrown != null)
+    assert(rules.check(mismatchingJson) === Seq(Ongeldig(Map(path -> Seq(s"Invalid input: ${mismatchingInput}")))))
   }
 
   test("JessRuleSet should be able to check a single rule in a Json string") {
@@ -108,7 +141,7 @@ class JessRuleSetSuite extends FunSuite {
       that(path1) { js: JsNumber => js.exists && js.isInt } 
     }
 
-    assert(rules.check(jsonString) === Seq(Geldig()))
+    assert(rules.check(jsonString) === Seq(Geldig(path1)))
   }
 
   test("JessRuleSet should be able to check multiple rules in a row") {
@@ -125,7 +158,7 @@ class JessRuleSetSuite extends FunSuite {
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Geldig()))
+      assert(rules.check(json2) === Seq(Geldig(path1)))
     }
   }
 
@@ -141,11 +174,11 @@ class JessRuleSetSuite extends FunSuite {
     val rules = ensure { 
         that(path1) { js: JsNumber => js.exists && js.isInt }
         and (path2) { js: JsObject => js.isNotEmpty }
-        and (path3) { js: JsArray => js.isNotEmpty }
+        and (path3) { js: JsArray => !js.isNotEmpty }
     }
 
     new Data {
-      assert(rules.check(jsonFull) === Seq(Geldig()))
+      assert(rules.check(jsonFull) === Seq(Geldig(path1)))
     }
   }
 }
