@@ -45,7 +45,7 @@ class JessSuite extends FunSuite {
     val path1 = root \ "1"
 
     val rules = ensure { 
-      that(path1) { js: JsNumber => js.exists && js.isInt } 
+      that(path1) { js: JsNumber => js.exists && js.asInt == 123 } 
     }
 
     new Data {
