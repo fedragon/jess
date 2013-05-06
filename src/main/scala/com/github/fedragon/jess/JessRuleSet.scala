@@ -18,7 +18,9 @@ trait JessRule {
       case false => Ongeldig(Map(path -> Seq(s"Rule not verified for input: ${input}")))
     }
 
-  def and(other: JessRule) = Seq(this, other)
+  def +: (other: JessRule) = Seq(this, other)
+
+  def +: (other: Seq[JessRule]) = other :+ this
 }
 
 object JessRule {

@@ -27,10 +27,6 @@ class JessRuleSetSuite extends FunSuite {
 
     val path1 = root \ "1"
 
-    val r = that(path1) { js: JsNumber => js.exists && js.asInt == 123 } and that(path1) { js: JsNumber => js.exists && js.asInt == 123 }
-
-    println(s"RULE: $r")
-
     val rules = ensure { 
       that(path1) { js: JsNumber => js.exists && js.asInt == 123 } 
     }
@@ -79,17 +75,26 @@ class JessRuleSetSuite extends FunSuite {
 
     val path1 = root \ "1"
     val path2 = root \ "2"
+    val path3 = root \ "2.1"
 
     val rules = ensure { 
         that(path1) { 
-          js: JsNumber => !js.exists 
-        } and that(path2) { 
-          js: JsObject => !js.exists 
+          js: JsNumber => !js.exists
+        } +: that(path2) { 
+          js: JsObject => !js.exists
+        } +: that(path3) {
+          js: JsNumber => !js.exists
         }
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Ongeldig(Map(path1 -> Seq("Rule not verified for input: 123")))))
+      val expected = Seq(
+        Ongeldig(Map(path1 -> Seq("Rule not verified for input: 123"))),
+        Ongeldig(Map(path3 -> Seq("Field not found at path: /2.1"))),
+        Ongeldig(Map(path2 -> Seq("Rule not verified for input: {\"2.1\":456}")))
+      )
+      val actual = rules.check(json2)
+      assert(actual.diff(expected) === Seq.empty)
     }
   }
 
@@ -143,12 +148,17 @@ class JessRuleSetSuite extends FunSuite {
     val path2 = root \ "2"
 
     val rules = ensure { 
-        that(path1) { js: JsNumber => js.exists && js.isInt }
-        and (path2) { js: JsObject => js.isNotEmpty }
+        that(path1) { 
+          js: JsNumber => js.exists && js.isInt 
+        } +: that(path2) { 
+          js: JsObject => js.isNotEmpty 
+        }
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Geldig(path1)))
+      val expected = Seq(Geldig(path1), Geldig(path2))
+      val actual = rules.check(json2)
+      assert(actual.diff(expected) === Seq.empty)
     }
   }
 
@@ -162,13 +172,19 @@ class JessRuleSetSuite extends FunSuite {
     val path3 = root \ "3"
 
     val rules = ensure { 
-        that(path1) { js: JsNumber => js.exists && js.isInt }
-        and (path2) { js: JsObject => js.isNotEmpty }
-        and (path3) { js: JsArray => !js.isNotEmpty }
+        that(path1) { 
+          js: JsNumber => js.exists && js.isInt 
+        } +: that(path2) { 
+          js: JsObject => js.isNotEmpty 
+        } +: that(path3) { 
+          js: JsArray => js.isNotEmpty 
+        }
     }
 
     new Data {
-      assert(rules.check(jsonFull) === Seq(Geldig(path1)))
+      val expected = Seq(Geldig(path1), Geldig(path2), Geldig(path3))
+      val actual = rules.check(jsonFull)
+      assert(actual.diff(expected) === Seq.empty)
     }
   }
 }
