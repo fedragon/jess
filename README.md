@@ -31,8 +31,11 @@ test("should be able to check a single rule") {
   val path2 = root \ "2"
 
   val rules = ensure { 
-      that (path1) { js: JsNumber => js.asInt == 123 }
-      and  (path2) { js: JsObject => js.isNotEmpty }
+      that (path1) { 
+        js: JsNumber => js.asInt == 123 
+      } and that (path2) { 
+        js: JsObject => js.isNotEmpty 
+      }
   }
 
   assert(rules.check(jsonString) === Seq(Geldig()))

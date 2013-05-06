@@ -17,6 +17,8 @@ trait JessRule {
       case true => Geldig(path)
       case false => Ongeldig(Map(path -> Seq(s"Rule not verified for input: ${input}")))
     }
+
+  def and(other: JessRule) = Seq(this, other)
 }
 
 object JessRule {
@@ -30,7 +32,13 @@ object JessRule {
    * Wraps the rules in a JessRules.
    * @return JessRules instance
    */
-  def ensure (rules: JessRule*) = new JessRuleSet(rules)
+  def ensure (rule: JessRule) = new JessRuleSet(Seq(rule))
+
+  /**
+   * Wraps the rules in a JessRules.
+   * @return JessRules instance
+   */
+  def ensure (rules: Seq[JessRule]) = new JessRuleSet(rules)
 
   /**
    * Creates a rule for this path.

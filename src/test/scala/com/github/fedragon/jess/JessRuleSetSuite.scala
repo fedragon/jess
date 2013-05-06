@@ -27,6 +27,10 @@ class JessRuleSetSuite extends FunSuite {
 
     val path1 = root \ "1"
 
+    val r = that(path1) { js: JsNumber => js.exists && js.asInt == 123 } and that(path1) { js: JsNumber => js.exists && js.asInt == 123 }
+
+    println(s"RULE: $r")
+
     val rules = ensure { 
       that(path1) { js: JsNumber => js.exists && js.asInt == 123 } 
     }
@@ -77,8 +81,11 @@ class JessRuleSetSuite extends FunSuite {
     val path2 = root \ "2"
 
     val rules = ensure { 
-        that(path1) { js: JsNumber => !js.exists }
-        and (path2) { js: JsObject => !js.exists }
+        that(path1) { 
+          js: JsNumber => !js.exists 
+        } and that(path2) { 
+          js: JsObject => !js.exists 
+        }
     }
 
     new Data {
