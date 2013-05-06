@@ -48,7 +48,7 @@ class JessRuleSetSuite extends FunSuite {
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Ongeldig(Map(path -> Seq(s"Field not found at path: ${path}")))))
+      assert(rules.check(json2) === Seq(Ongeldig(path, Seq(s"Field not found at path: ${path}"))))
     }
   }
 
@@ -64,7 +64,7 @@ class JessRuleSetSuite extends FunSuite {
     }
 
     new Data {
-      assert(rules.check(json2) === Seq(Ongeldig(Map(path -> Seq("Rule not verified for input: 123")))))
+      assert(rules.check(json2) === Seq(Ongeldig(path, Seq("Rule not verified for input: 123"))))
     }
   }
 
@@ -89,9 +89,9 @@ class JessRuleSetSuite extends FunSuite {
 
     new Data {
       val expected = Seq(
-        Ongeldig(Map(path1 -> Seq("Rule not verified for input: 123"))),
-        Ongeldig(Map(path3 -> Seq("Field not found at path: /2.1"))),
-        Ongeldig(Map(path2 -> Seq("Rule not verified for input: {\"2.1\":456}")))
+        Ongeldig(path1, Seq("Rule not verified for input: 123")),
+        Ongeldig(path3, Seq("Field not found at path: /2.1")),
+        Ongeldig(path2, Seq("Rule not verified for input: {\"2.1\":456}"))
       )
       val actual = rules.check(json2)
       assert(actual.diff(expected) === Seq.empty)
@@ -114,7 +114,7 @@ class JessRuleSetSuite extends FunSuite {
       that(path) { js: JsObject => js.exists } 
     }
 
-    assert(rules.check(mismatchingJson) === Seq(Ongeldig(Map(path -> Seq(s"Invalid input: ${mismatchingInput}")))))
+    assert(rules.check(mismatchingJson) === Seq(Ongeldig(path, Seq(s"Invalid input: ${mismatchingInput}"))))
   }
 
   test("JessRuleSet should be able to check a single rule in a Json string") {

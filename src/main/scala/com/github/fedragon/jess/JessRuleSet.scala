@@ -15,12 +15,12 @@ trait JessRule {
   def apply(input: Input): ValidationResult =
     func(input) match {
       case true => Geldig(path)
-      case false => Ongeldig(Map(path -> Seq(s"Rule not verified for input: ${input}")))
+      case false => Ongeldig(path, Seq(s"Rule not verified for input: ${input}"))
     }
 
-  def +: (other: JessRule) = Seq(this, other)
+  def +: (other: JessRule) = Vector(this, other)
 
-  def +: (other: Seq[JessRule]) = other :+ this
+  def +: (other: Vector[JessRule]) = other :+ this
 }
 
 object JessRule {
@@ -34,13 +34,13 @@ object JessRule {
    * Wraps the rules in a JessRules.
    * @return JessRules instance
    */
-  def ensure (rule: JessRule) = new JessRuleSet(Seq(rule))
+  def ensure (rule: JessRule) = new JessRuleSet(Vector(rule))
 
   /**
    * Wraps the rules in a JessRules.
    * @return JessRules instance
    */
-  def ensure (rules: Seq[JessRule]) = new JessRuleSet(rules)
+  def ensure (rules: Vector[JessRule]) = new JessRuleSet(rules)
 
   /**
    * Creates a rule for this path.
@@ -58,7 +58,7 @@ object JessRule {
 /**
  * Container for rules.
  */
-class JessRuleSet(val rules: Seq[JessRule]) {
+class JessRuleSet(val rules: Vector[JessRule]) {
 
   /**
    * Executes all rules on this JsObject and collects their validation results.
@@ -66,7 +66,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
    */
   def check(jsRoot: JsObject): Seq[ValidationResult] = {
 
-    def fieldNotFound(path: JessPath) = Ongeldig(Map(path -> Seq(s"Field not found at path: ${path}")))
+    def fieldNotFound(path: JessPath) = Ongeldig(path, Seq(s"Field not found at path: ${path}"))
     def invalidInput(input: JsValue) = s"Invalid input: ${input}"
     def unsupportedRule(rule: JessRule) = s"Unsupported rule: ${rule}"
 
@@ -79,7 +79,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
             case Some(field) =>
               field match {
                 case input: JsObject => objRule(input)
-                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
+                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
               }
             case None => fieldNotFound(path)
           }
@@ -88,7 +88,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
             case Some(field) =>
               field match {
                 case input: JsNumber => numRule(input)
-                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
+                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
               }
             case None => fieldNotFound(path)
           }
@@ -97,7 +97,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
             case Some(field) =>
               field match {
                 case input: JsArray => arrayRule(input)
-                case wrong @ _ => Ongeldig(Map(path -> Seq(invalidInput(wrong))))
+                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
               }
             case None => fieldNotFound(path)
           }

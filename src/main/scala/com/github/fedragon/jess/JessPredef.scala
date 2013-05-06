@@ -8,19 +8,16 @@ object JessPredef {
   /**
    * Validation result
    */
-  abstract sealed class ValidationResult
+  abstract sealed class ValidationResult(path: JessPath)
   /**
    * Valid result
    */
-  case class Geldig(path: JessPath) extends ValidationResult
+  case class Geldig(path: JessPath) extends ValidationResult(path)
   /**
    * Invalid result
    */
-  case class Ongeldig(errors: Errors) extends ValidationResult
+  case class Ongeldig(path: JessPath, issues: Seq[String]) extends ValidationResult(path)
   
-  // Internal type aliases
-	type Errors = Map[JessPath, Seq[String]]
-
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
 
