@@ -33,7 +33,7 @@ test("should be able to check a single rule") {
   val rules = ensure { 
       that (path1) { 
         js: JsNumber => js.asInt == 123 
-      } and that (path2) { 
+      } +: that (path2) { 
         js: JsObject => js.isNotEmpty 
       }
   }
