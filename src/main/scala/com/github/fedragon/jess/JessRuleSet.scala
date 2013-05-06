@@ -65,7 +65,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
 
       rule match {
         case objRule: JessObjectRule =>
-          findField(jsRoot, path) match {
+          path.in(jsRoot) match {
             case Some(field) =>
               field match {
                 case input: JsObject => objRule(input)
@@ -74,7 +74,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
             case None => fieldNotFound(path)
           }
         case numRule: JessNumberRule =>
-          findField(jsRoot, numRule.path) match {
+          path.in(jsRoot) match {
             case Some(field) =>
               field match {
                 case input: JsNumber => numRule(input)
@@ -83,7 +83,7 @@ class JessRuleSet(val rules: Seq[JessRule]) {
             case None => fieldNotFound(path)
           }
         case arrayRule: JessArrayRule =>
-          findField(jsRoot, arrayRule.path) match {
+          path.in(jsRoot) match {
             case Some(field) =>
               field match {
                 case input: JsArray => arrayRule(input)
@@ -112,39 +112,5 @@ class JessRuleSet(val rules: Seq[JessRule]) {
       case obj: JsObject => check(obj)
       case _ => throw new IllegalArgumentException(s"Invalid input: ${jsonString}")
     }
-  }
-
-  private[jess] def findField(root: JsObject, path: JessPath): Option[JsValue] = {
-
-    def find(node: JsObject, p: JessPath): Option[JsValue] = {
-
-      def filter(haystack: Seq[(String, JsValue)], needle: String)(f: JsValue => Option[JsValue]): Option[JsValue] = {
-        val children = haystack.filter(f => f._1 == needle)
-
-        if(children.isEmpty) None
-        else {
-          children.head match {
-            case (_, obj: JsValue) => f(obj)
-            case _ => None
-          }
-        }
-      }
-
-      if (p.isEmpty) None
-      else if(p.size == 1) {
-        filter(node.fields, p.head) { obj => Some(obj) }
-      }
-      else {
-        filter(node.fields, p.head) { value => 
-          value match {
-            case obj: JsObject => find(obj, p.tail)
-            case _ => throw new IllegalArgumentException("Invalid path")
-          }
-        }
-      }
-    }
-    
-    // The root of the path is just a placeholder, so I drop it
-    find(root, path.tail)
   }
 }

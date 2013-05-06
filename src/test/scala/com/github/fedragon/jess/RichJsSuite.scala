@@ -25,13 +25,6 @@ class RichJsSuite extends FunSuite {
     assert(thrown != null)
   }
 
-  // TODO: this doesn't work...
-  ignore("RichJsNumber.asDouble should work with a valid double value") {
-    val richJsNumber = new RichJsNumber(new JsNumber(123.4))
-
-    assert(richJsNumber.asDouble === 123.4)
-  }
-
   test("RichJsObject.isEmpty should work") {
     val richJsObject = new RichJsObject(new JsObject(Seq.empty))
 

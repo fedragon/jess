@@ -16,23 +16,41 @@ object JessPath {
  */
 case class JessPath(path: Vector[String]) {
 
-  /**
-   * Returns a new JessPath that represents this path with the new node appended.
-   * @return new JessPath that represents this path with the new node appended.
-   */
   def \(node: String) = new JessPath(path :+ node)
   
-  def foreach(f: Vector[String] => Unit) {
-    f(path)
+  def in(root: JsObject): Option[JsValue] = {
+
+    def find(node: JsObject, p: Vector[String]): Option[JsValue] = {
+
+      def filter(haystack: Seq[(String, JsValue)], needle: String)(f: JsValue => Option[JsValue]): Option[JsValue] = {
+        val children = haystack.filter(f => f._1 == needle)
+
+        if(children.isEmpty) None
+        else {
+          children.head match {
+            case (_, obj: JsValue) => f(obj)
+            case _ => None
+          }
+        }
+      }
+
+      if (p.isEmpty) None
+      else if(p.size == 1) {
+        filter(node.fields, p.head) { obj => Some(obj) }
+      }
+      else {
+        filter(node.fields, p.head) { value => 
+          value match {
+            case obj: JsObject => find(obj, p.tail)
+            case _ => throw new IllegalArgumentException("Invalid path")
+          }
+        }
+      }
+    }
+    
+    // The root of the path is just a placeholder, so I drop it
+    find(root, path.tail)
   }
-
-  def isEmpty = path.isEmpty
-
-  def size = path.size
-
-  def head = path.head
-
-  def tail = JessPath(path.tail)
 
   override def toString = path.tail.mkString("/", "~", "")
 }

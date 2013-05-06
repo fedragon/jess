@@ -20,23 +20,6 @@ class JessRuleSetSuite extends FunSuite {
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray))
   }
 
-  test("JessRuleSet should be able to extract fields from a path") {
-    import JessPath.root
-    import JessRule._
-    
-    val path1 = root \ "1"
-    val path2 = root \ "2" \ "2.1"
-
-    val rules = ensure {
-      that(path1) { js: JsNumber => js.exists && js.isInt }
-    }
-
-    new Data {
-      assert(rules.findField(json2, path1) === Some(new JsNumber(123)))
-      assert(rules.findField(json2, path2) === Some(new JsNumber(456)))
-    }
-  }
-
   test("JessRuleSet should be able to check a single rule in a JsObject") {
 
     import JessPath.root
