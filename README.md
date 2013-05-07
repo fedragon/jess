@@ -38,7 +38,7 @@ test("should be able to check a single rule") {
       }
   }
 
-  assert(rules.check(jsonString) === Seq(Geldig()))
+  assert(rules.check(jsonString) === Seq(Geldig(path1), Geldig(path2)))
 }
 ```
 
