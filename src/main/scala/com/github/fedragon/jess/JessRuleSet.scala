@@ -77,6 +77,7 @@ class JessRuleSet(val rules: Vector[JessRule]) {
               }
             case None => fieldNotFound(path)
           }
+
         case arrayRule: JessArrayRule =>
           path.in(jsRoot) match {
             case Some(field) =>
@@ -86,6 +87,7 @@ class JessRuleSet(val rules: Vector[JessRule]) {
               }
             case None => fieldNotFound(path)
           }
+
         case numRule: JessNumberRule =>
           path.in(jsRoot) match {
             case Some(field) =>
@@ -95,6 +97,7 @@ class JessRuleSet(val rules: Vector[JessRule]) {
               }
             case None => fieldNotFound(path)
           }
+          
         case stringRule: JessStringRule =>
           path.in(jsRoot) match {
             case Some(field) =>

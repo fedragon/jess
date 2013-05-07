@@ -68,31 +68,32 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("should fail if some rules are not verified") {
+  test("should fail (but still execute all rules) if some rules are not verified") {
 
     import JessPath.root
     import JessRule._
 
     val path1 = root \ "1"
     val path2 = root \ "2"
-    val path3 = root \ "2.1"
+    val path4 = root \ "4"
 
     val rules = ensure { 
         that(path1) { 
           js: JsNumber => !js.exists
         } +: that(path2) { 
           js: JsObject => !js.exists
-        } +: that(path3) {
-          js: JsNumber => !js.exists
+        } +: that(path4) {
+          js: JsNumber => js.isInt
         }
     }
 
     new Data {
-      val expected = Seq(
+      val expected = Vector(
         Ongeldig(path1, Seq("Rule not verified for input: 123")),
-        Ongeldig(path3, Seq("Field not found at path: /->2.1")),
-        Ongeldig(path2, Seq("Rule not verified for input: {\"2.1\":456}"))
+        Ongeldig(path2, Seq("Rule not verified for input: {\"2.1\":456}")),
+        Ongeldig(path4, Seq("Field not found at path: /->4"))
       )
+
       val actual = rules.check(json2)
       assert(actual.diff(expected) === Seq.empty)
     }
