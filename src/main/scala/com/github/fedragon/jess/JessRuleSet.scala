@@ -20,7 +20,7 @@ trait JessRule {
 
   def +: (other: JessRule) = Vector(this, other)
 
-  def +: (other: Vector[JessRule]) = other :+ this
+  def +: (other: Vector[JessRule]) = this +: other
 }
 
 object JessRule {
@@ -47,12 +47,6 @@ object JessRule {
    * @retun created rule
    */
   def that (path: JessPath)(magnet: JessRulesMagnet): magnet.Output = magnet(path)
-
-  /**
-   * Creates a rule for this path.
-   * @retun created rule
-   */
-  def and (path: JessPath)(magnet: JessRulesMagnet): magnet.Output = magnet(path)
 }
 
 /**

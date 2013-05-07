@@ -7,6 +7,8 @@ import JessPredef._
  */
 trait JessNumberRule extends JessRule {
   type Input = JsNumber
+
+  override def toString = s"Rule: (path: ${path}, JsNumber => Boolean)"
 }
 
 /**
@@ -14,6 +16,8 @@ trait JessNumberRule extends JessRule {
  */
 trait JessObjectRule extends JessRule {
   type Input = JsObject
+
+  override def toString = s"Rule: (path: ${path}, JsObject => Boolean)"
 }
 
 /**
@@ -21,4 +25,6 @@ trait JessObjectRule extends JessRule {
  */
 trait JessArrayRule extends JessRule {
   type Input = JsArray
+
+  override def toString = s"Rule: (path: ${path}, JsArray => Boolean)"
 }
