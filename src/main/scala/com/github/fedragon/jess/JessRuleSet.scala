@@ -20,12 +20,11 @@ trait JessRule {
 
   def +: (other: JessRule) = Vector(this, other)
 
-  def +: (other: Vector[JessRule]) = this +: other
+  def +: (other: Vector[JessRule]) = other :+ this
 }
 
 object JessRule {
   // Implicit conversions
-  implicit def stringToPath(input: String) = JessPath(input)
   implicit def jsNumberToRichJsNumber (input: JsNumber) = new RichJsNumber(input)
   implicit def jsObjectToRichJsObject (input: JsObject) = new RichJsObject(input)
   implicit def jsArrayToRichJsArray   (input: JsArray)  = new RichJsArray(input)

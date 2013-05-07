@@ -20,7 +20,7 @@ class JessRuleSetSuite extends FunSuite {
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray))
   }
 
-  test("JessRuleSet should be able to check a single rule in a JsObject") {
+  test("should be able to check a single rule in a JsObject") {
 
     import JessPath.root
     import JessRule._
@@ -36,7 +36,7 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should fail if a path is not found") {
+  test("should fail if a path is not found") {
 
     import JessPath.root
     import JessRule._
@@ -52,7 +52,7 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should fail if a rule is not verified") {
+  test("should fail if a rule is not verified") {
 
     import JessPath.root
     import JessRule._
@@ -68,7 +68,7 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should fail if some rules are not verified") {
+  test("should fail if some rules are not verified") {
 
     import JessPath.root
     import JessRule._
@@ -90,7 +90,7 @@ class JessRuleSetSuite extends FunSuite {
     new Data {
       val expected = Seq(
         Ongeldig(path1, Seq("Rule not verified for input: 123")),
-        Ongeldig(path3, Seq("Field not found at path: /2.1")),
+        Ongeldig(path3, Seq("Field not found at path: /->2.1")),
         Ongeldig(path2, Seq("Rule not verified for input: {\"2.1\":456}"))
       )
       val actual = rules.check(json2)
@@ -98,7 +98,7 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should fail if the actual value doesn't match the expected type") {
+  test("should fail if the actual value doesn't match the expected type") {
 
     import JessPath.root
     import JessRule._
@@ -117,7 +117,7 @@ class JessRuleSetSuite extends FunSuite {
     assert(rules.check(mismatchingJson) === Seq(Ongeldig(path, Seq(s"Invalid input: ${mismatchingInput}"))))
   }
 
-  test("JessRuleSet should be able to check a single rule in a Json string") {
+  test("should be able to check a single rule in a Json string") {
 
     import JessPath.root
     import JessRule._
@@ -139,7 +139,7 @@ class JessRuleSetSuite extends FunSuite {
     assert(rules.check(jsonString) === Seq(Geldig(path1)))
   }
 
-  test("JessRuleSet should be able to check multiple rules in a row") {
+  test("should be able to check multiple rules in a row") {
 
     import JessPath.root
     import JessRule._
@@ -162,7 +162,7 @@ class JessRuleSetSuite extends FunSuite {
     }
   }
 
-  test("JessRuleSet should be able to check rules on all kinds of json values") {
+  test("should be able to check rules on all kinds of json values") {
     
     import JessPath.root
     import JessRule._

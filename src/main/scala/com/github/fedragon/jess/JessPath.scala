@@ -6,7 +6,7 @@ object JessPath {
   /**
    * Root
    */
-  val root: JessPath = new JessPath(Vector(""))
+  val root: JessPath = new JessPath(Vector("/"))
   
   def apply(nodes: String*) = new JessPath(Vector(nodes: _*))
 }
@@ -52,5 +52,5 @@ case class JessPath(path: Vector[String]) {
     find(root, path.tail)
   }
 
-  override def toString = path.tail.mkString("/", "~", "")
+  override def toString = path.mkString("->")
 }

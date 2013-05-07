@@ -22,11 +22,10 @@ class JessPathSuite extends FunSuite {
 
   test("JessPath.\\ should concatenate paths correctly") {
     import JessPath.root
-    import JessRule.stringToPath
 
     val path = root \ "child"
     val expected = JessPath (
-      Vector("", "child")
+      Vector("/", "child")
     )
 
     assert(path === expected)
