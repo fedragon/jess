@@ -3,6 +3,15 @@ package com.github.fedragon.jess
 import JessPredef._
 
 /**
+ * Enricher class for JsString.
+ */
+class RichJsString(js: JsString) {
+  def exists: Boolean = js.value != null
+
+  def isEmpty: Boolean = this.exists && js.value.isEmpty
+}
+
+/**
  * Enricher class for JsNumber.
  */
 class RichJsNumber(js: JsNumber) {

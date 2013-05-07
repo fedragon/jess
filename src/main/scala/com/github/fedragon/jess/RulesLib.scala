@@ -3,6 +3,15 @@ package com.github.fedragon.jess
 import JessPredef._
 
 /**
+ * Trait for JsString rules.
+ */
+trait JessStringRule extends JessRule {
+  type Input = JsString
+
+  override def toString = s"Rule: (path: ${path}, JsString => Boolean)"
+}
+
+/**
  * Trait for JsNumber rules.
  */
 trait JessNumberRule extends JessRule {

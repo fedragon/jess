@@ -25,6 +25,7 @@ trait JessRule {
 
 object JessRule {
   // Implicit conversions
+  implicit def jsStringToRichJsString (input: JsString) = new RichJsString(input)
   implicit def jsNumberToRichJsNumber (input: JsNumber) = new RichJsNumber(input)
   implicit def jsObjectToRichJsObject (input: JsObject) = new RichJsObject(input)
   implicit def jsArrayToRichJsArray   (input: JsArray)  = new RichJsArray(input)
@@ -76,15 +77,6 @@ class JessRuleSet(val rules: Vector[JessRule]) {
               }
             case None => fieldNotFound(path)
           }
-        case numRule: JessNumberRule =>
-          path.in(jsRoot) match {
-            case Some(field) =>
-              field match {
-                case input: JsNumber => numRule(input)
-                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
-              }
-            case None => fieldNotFound(path)
-          }
         case arrayRule: JessArrayRule =>
           path.in(jsRoot) match {
             case Some(field) =>
@@ -94,6 +86,25 @@ class JessRuleSet(val rules: Vector[JessRule]) {
               }
             case None => fieldNotFound(path)
           }
+        case numRule: JessNumberRule =>
+          path.in(jsRoot) match {
+            case Some(field) =>
+              field match {
+                case input: JsNumber => numRule(input)
+                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
+              }
+            case None => fieldNotFound(path)
+          }
+        case stringRule: JessStringRule =>
+          path.in(jsRoot) match {
+            case Some(field) =>
+              field match {
+                case input: JsString => stringRule(input)
+                case wrong @ _ => Ongeldig(path, Seq(invalidInput(wrong)))
+              }
+            case None => fieldNotFound(path)
+          }
+
         case rule @ _ => throw new IllegalArgumentException(unsupportedRule(rule))
       }
     }
