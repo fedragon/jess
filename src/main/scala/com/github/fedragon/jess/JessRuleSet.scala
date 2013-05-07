@@ -47,6 +47,34 @@ object JessRule {
    * @retun created rule
    */
   def that (path: JessPath)(magnet: JessRulesMagnet): magnet.Output = magnet(path)
+
+  def obj(p: JessPath)(f: JsObject => Boolean): JessObjectRule = {
+    new JessObjectRule {
+      val func = f
+      val path = p
+    }
+  }
+
+  def number(p: JessPath)(f: JsNumber => Boolean): JessNumberRule = {
+    new JessNumberRule {
+      val func = f
+      val path = p
+    }
+  }
+
+  def string(p: JessPath)(f: JsString => Boolean): JessStringRule = {
+    new JessStringRule {
+      val func = f
+      val path = p
+    }
+  }
+
+  def array(p: JessPath)(f: JsArray => Boolean): JessArrayRule = {
+    new JessArrayRule {
+      val func = f
+      val path = p
+    }
+  }
 }
 
 /**

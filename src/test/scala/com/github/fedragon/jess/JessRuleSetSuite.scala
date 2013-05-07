@@ -14,11 +14,42 @@ class JessRuleSetSuite extends FunSuite {
     val jsNumber = ("1", new JsNumber(123))
     val jsObject = ("2", new JsObject(Seq(("2.1", new JsNumber(456)))))
     val jsArray =  ("3", new JsArray(Seq(new JsNumber(789))))
+    val jsString = ("4", new JsString("aaa"))
 
     val json2 = new JsObject(Seq(jsNumber, jsObject))
 
-    val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray))
+    val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray, jsString))
   }
+
+  test("New syntax works") {
+    import JessPath.root
+    import JessRule._
+
+    val path1 = root \ "1"
+    val path2 = root \ "2"
+    val path3 = root \ "3"
+    val path4 = root \ "4"
+
+    val rules = ensure { 
+      number(path1) { 
+        js => js.exists && js.asInt == 123 
+      } +: obj(path2) { 
+        js => js.exists 
+      } +: array(path3) { 
+        js => js.exists 
+      } +: string(path4) { 
+        js => js.exists 
+      }
+    }
+
+    new Data {
+      val actual = rules.check(jsonFull)
+      val expected = Vector(Geldig(path1), Geldig(path2), Geldig(path3), Geldig(path4))
+      assert(actual.diff(expected) === Seq.empty)
+    }
+  }
+
+
 
   test("should be able to check a single rule in a JsObject") {
 
