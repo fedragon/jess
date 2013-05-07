@@ -9,10 +9,22 @@ class RichJsSuite extends FunSuite {
 
   import JessPredef._
 
-  test("RichJsString.isEmpty should work") {
+  test("RichJsString.isNotEmpty should work") {
     val richJsString = new RichJsString(new JsString("aaa"))
 
-    assert(richJsString.isEmpty === false)
+    assert(richJsString.isNotEmpty === true)
+  }
+
+  test("RichJsString.isInt should work") {
+    val richJsString = new RichJsString(new JsString("111"))
+
+    assert(richJsString.isInt === true)
+  }
+
+  test("RichJsString.asInt should work") {
+    val richJsString = new RichJsString(new JsString("111"))
+
+    assert(richJsString.asInt === 111)
   }
 
   test("RichJsNumber.asInt should work with a valid integer value") {
