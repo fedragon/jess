@@ -42,12 +42,6 @@ object JessRule {
    */
   def ensure (rules: Vector[JessRule]) = new JessRuleSet(rules)
 
-  /**
-   * Creates a rule for this path.
-   * @retun created rule
-   */
-  def that (path: JessPath)(magnet: JessRulesMagnet): magnet.Output = magnet(path)
-
   def obj(p: JessPath)(f: JsObject => Boolean): JessObjectRule = {
     new JessObjectRule {
       val func = f

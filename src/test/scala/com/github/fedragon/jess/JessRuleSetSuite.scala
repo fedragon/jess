@@ -59,7 +59,7 @@ class JessRuleSetSuite extends FunSuite {
     val path1 = root \ "1"
 
     val rules = ensure { 
-      that(path1) { js: JsNumber => js.exists && js.asInt == 123 } 
+      number(path1) { js => js.exists && js.asInt == 123 } 
     }
 
     new Data {
@@ -75,7 +75,7 @@ class JessRuleSetSuite extends FunSuite {
     val path = root \ "9"
 
     val rules = ensure { 
-      that(path) { js: JsNumber => true }
+      number(path) { js => true }
     }
 
     new Data {
@@ -91,7 +91,7 @@ class JessRuleSetSuite extends FunSuite {
     val path = root \ "1"
 
     val rules = ensure { 
-      that(path) { js: JsNumber => !js.exists }
+      number(path) { js => !js.exists }
     }
 
     new Data {
@@ -109,12 +109,12 @@ class JessRuleSetSuite extends FunSuite {
     val path4 = root \ "4"
 
     val rules = ensure { 
-        that(path1) { 
-          js: JsNumber => !js.exists
-        } +: that(path2) { 
-          js: JsObject => !js.exists
-        } +: that(path4) {
-          js: JsNumber => js.isInt
+        number(path1) { 
+          js => !js.exists
+        } +: obj(path2) { 
+          js => !js.exists
+        } +: number(path4) {
+          js => js.isInt
         }
     }
 
@@ -143,7 +143,7 @@ class JessRuleSetSuite extends FunSuite {
     val path = root \ "2"
 
     val rules = ensure { 
-      that(path) { js: JsObject => js.exists } 
+      obj(path) { js => js.exists } 
     }
 
     assert(rules.check(mismatchingJson) === Seq(Ongeldig(path, Seq(s"Invalid input: ${mismatchingInput}"))))
@@ -165,7 +165,7 @@ class JessRuleSetSuite extends FunSuite {
     val path2 = root \ "2" \ "2.1"
 
     val rules = ensure { 
-      that(path1) { js: JsNumber => js.exists && js.isInt } 
+      number(path1) { js => js.exists && js.isInt } 
     }
 
     assert(rules.check(jsonString) === Seq(Geldig(path1)))
@@ -180,10 +180,10 @@ class JessRuleSetSuite extends FunSuite {
     val path2 = root \ "2"
 
     val rules = ensure { 
-        that(path1) { 
-          js: JsNumber => js.exists && js.isInt 
-        } +: that(path2) { 
-          js: JsObject => js.isNotEmpty 
+        number(path1) { 
+          js => js.exists && js.isInt 
+        } +: obj(path2) { 
+          js => js.isNotEmpty 
         }
     }
 
@@ -204,12 +204,12 @@ class JessRuleSetSuite extends FunSuite {
     val path3 = root \ "3"
 
     val rules = ensure { 
-        that(path1) { 
-          js: JsNumber => js.exists && js.isInt 
-        } +: that(path2) { 
-          js: JsObject => js.isNotEmpty 
-        } +: that(path3) { 
-          js: JsArray => js.isNotEmpty 
+        number(path1) { 
+          js => js.exists && js.isInt 
+        } +: obj(path2) { 
+          js => js.isNotEmpty 
+        } +: array(path3) { 
+          js => js.isNotEmpty 
         }
     }
 
