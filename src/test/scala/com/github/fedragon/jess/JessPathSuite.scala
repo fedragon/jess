@@ -12,7 +12,8 @@ class JessPathSuite extends FunSuite {
   trait Data {
 
     val jsNumber = ("1", new JsNumber(123))
-    val jsObject = ("2", new JsObject(Seq(("2.1", new JsNumber(456)))))
+    val jsObject = ("2", new JsObject(Seq(("2.1", new
+     JsNumber(456)))))
     val jsArray =  ("3", new JsArray(Seq(new JsNumber(789))))
 
     val json2 = new JsObject(Seq(jsNumber, jsObject))
@@ -35,14 +36,21 @@ class JessPathSuite extends FunSuite {
 
     //import JessImplicits._
 
-    val f = (js: JsValue) => true
+    val num = ("1", new RichJsNumber((js: JsNumber) => js.value == 123))
+    val obj = ("2", new RichJsObject(
+      Seq(
+        ("2.1", new RichJsNumber((js: JsNumber) => js.value == 456))
+      )
+    ))
 
     new Data {
-      json { 
-        ("1", f)
-      }
+      val validator = 
+        json ( 
+          num,
+          obj
+        )
 
-      //assert(rules() === false)
+      assert(validator(jsonFull) === true)
 
       /*
       jsonFull { // implicitly passing the JsValue corresponding to the root, if it exists
