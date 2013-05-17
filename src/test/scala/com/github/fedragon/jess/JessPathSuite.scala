@@ -32,8 +32,32 @@ class JessPathSuite extends FunSuite {
     assert(path === expected)
   }
 
-  test("Should be possible, sooner or later") {
-    
+  test("Should be possible, sooner or later") {    
+
+    import JessPath.root
+    import JessImplicits._
+
+    new Data {
+      val rules = asJsObject(jsonFull) { 
+        js => js.isEmpty
+      }
+
+      assert(rules() === false)
+
+      /*
+      jsonFull { // implicitly passing the JsValue corresponding to the root, if it exists
+        "1" {
+          "2.1" {
+            is(456)
+          }
+        }
+
+        "3" {
+          exists
+        }
+      }
+      */
+    }
   }
 
 }

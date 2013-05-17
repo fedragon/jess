@@ -14,3 +14,10 @@ object JessPredef {
   type JsObject = play.api.libs.json.JsObject
   type JsArray  = play.api.libs.json.JsArray
 }
+
+object JessImplicits {
+
+	import JessPredef._
+
+	def asJsObject (input: JsObject)(f: RichJsObject => Boolean): RichJsObject = new RichJsObject(input, f)
+}

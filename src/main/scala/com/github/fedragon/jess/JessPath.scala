@@ -12,5 +12,5 @@ case class JessPath(nodes: Vector[String]) {
 
 	def \ (node: String) = new JessPath(nodes :+ node)
 
-	override def toString = nodes mkString "->"
+	override def toString = nodes mkString "~>"
 }
