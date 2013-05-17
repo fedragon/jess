@@ -25,9 +25,7 @@ class JessPathSuite extends FunSuite {
     import JessPath.root
 
     val path = root \ "child"
-    val expected = new JessPath (
-      Vector("child")
-    )
+    val expected = new JessPath("child")
 
     assert(path === expected)
   }
@@ -38,11 +36,15 @@ class JessPathSuite extends FunSuite {
     import JessImplicits._
 
     new Data {
-      val rules = asJsObject(jsonFull) { 
-        js => js.isEmpty
+      root { 
+        empty -> false,
+
+        "1" {
+
+        }
       }
 
-      assert(rules() === false)
+      //assert(rules() === false)
 
       /*
       jsonFull { // implicitly passing the JsValue corresponding to the root, if it exists

@@ -19,5 +19,5 @@ object JessImplicits {
 
 	import JessPredef._
 
-	def asJsObject (input: JsObject)(f: RichJsObject => Boolean): RichJsObject = new RichJsObject(input, f)
+	implicit def toRichJsObject (input: JsObject) = new RichJsObject(input)
 }

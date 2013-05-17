@@ -3,14 +3,12 @@ package com.github.fedragon.jess
 import JessPredef._
 
 object JessPath {
-	val root = new JessPath(Vector.empty)
-
-	def apply(nodes: String*) = new JessPath(Vector(nodes: _*))
+	val root = JessPath("\\")
 }
 
-case class JessPath(nodes: Vector[String]) {
+case class JessPath(node: String, rule: Option[JsValue => Boolean] = None, subpaths: Vector[JessPath] = Vector.empty) {
 
-	def \ (node: String) = new JessPath(nodes :+ node)
+	def \ (child: String) = this.copy(subpaths = subpaths :+ JessPath(child))
 
-	override def toString = nodes mkString "~>"
+	override def toString = node + subpaths.map(p => p.toString)
 }
