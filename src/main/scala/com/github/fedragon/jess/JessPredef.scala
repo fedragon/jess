@@ -4,6 +4,10 @@ package com.github.fedragon.jess
  * Predefined classes and type aliases
  */
 object JessPredef {
+
+	type Validator = (String, JsValue => Boolean)
+
+	def json(fs: Validator*) = RichJsObject(fs)
   
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
@@ -15,9 +19,21 @@ object JessPredef {
   type JsArray  = play.api.libs.json.JsArray
 }
 
+import JessPredef._
+
+case class RichJsObject(fields: Seq[Validator]) {
+
+	def apply(js: JsObject) {
+
+		fields.forall { field =>
+
+
+		}
+	}
+}
+
+/*
 object JessImplicits {
-
-	import JessPredef._
-
 	implicit def toRichJsObject (input: JsObject) = new RichJsObject(input)
 }
+*/

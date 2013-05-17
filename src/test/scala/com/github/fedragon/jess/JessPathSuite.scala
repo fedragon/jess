@@ -20,6 +20,7 @@ class JessPathSuite extends FunSuite {
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray))
   }
 
+/*
   test("JessPath.\\ should concatenate paths correctly") {
     
     import JessPath.root
@@ -29,19 +30,16 @@ class JessPathSuite extends FunSuite {
 
     assert(path === expected)
   }
-
+*/
   test("Should be possible, sooner or later") {    
 
-    import JessPath.root
-    import JessImplicits._
+    //import JessImplicits._
+
+    val f = (js: JsValue) => true
 
     new Data {
-      root { 
-        empty -> false,
-
-        "1" {
-
-        }
+      json { 
+        ("1", f)
       }
 
       //assert(rules() === false)

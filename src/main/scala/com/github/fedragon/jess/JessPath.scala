@@ -2,10 +2,6 @@ package com.github.fedragon.jess
 
 import JessPredef._
 
-object JessPath {
-	val root = JessPath("\\")
-}
-
 case class JessPath(node: String, rule: Option[JsValue => Boolean] = None, subpaths: Vector[JessPath] = Vector.empty) {
 
 	def \ (child: String) = this.copy(subpaths = subpaths :+ JessPath(child))
