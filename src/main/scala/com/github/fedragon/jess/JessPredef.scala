@@ -7,12 +7,6 @@ object JessPredef {
 
 	type Validator = (String, RichJsValue)
 
-	//def json(fs: Validator*) = RichJsObject(fs)
-
-	def json(f: Validator) = RichJsObject(Seq(f))
-
-	def json(f: Validator, g: Validator) = RichJsObject(Seq(f, g))
-  
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
 
@@ -23,8 +17,26 @@ object JessPredef {
   type JsArray  = play.api.libs.json.JsArray
 }
 
-/*
-object JessImplicits {
-	implicit def toRichJsObject (input: JsObject) = new RichJsObject(input)
+object JessShortcuts {
+
+	import JessPredef._
+
+	def using(js: JsValue)(rich: RichJsObject) = {
+		rich(js)
+	}
+
+	def json(f: Validator) = RichJsObject(Seq(f))
+
+	def json(f: Validator, g: Validator) = RichJsObject(Seq(f, g))
 }
-*/
+
+object JessImplicits {
+	import JessPredef._
+
+	class JsFieldName(name: String) {
+		def asNum(f: JsNumber => Boolean) = (name, new RichJsNumber(f))
+		def asObj(seq: Seq[Validator]) = (name, new RichJsObject(seq))
+	}
+
+	implicit def stringToJsFieldName(str: String) = new JsFieldName(str)
+}

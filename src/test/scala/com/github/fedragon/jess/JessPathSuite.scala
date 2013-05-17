@@ -34,23 +34,27 @@ class JessPathSuite extends FunSuite {
 */
   test("Should be possible, sooner or later") {    
 
-    //import JessImplicits._
+    import JessShortcuts._
 
-    val num = ("1", new RichJsNumber((js: JsNumber) => js.value == 123))
-    val obj = ("2", new RichJsObject(
+    val num1 = ("1", new RichJsNumber((js: JsNumber) => js.value == 123))
+    val obj1 = ("2", new RichJsObject(
       Seq(
         ("2.1", new RichJsNumber((js: JsNumber) => js.value == 456))
       )
     ))
 
     new Data {
-      val validator = 
+      import JessImplicits._
+      
+      val result = 
+      using(jsonFull) { 
         json ( 
-          num,
-          obj
+          "1" asNum ((js: JsNumber) => js.value == 123),
+          "2" asObj (Seq.empty)
         )
+      }
 
-      assert(validator(jsonFull) === true)
+      assert(result === true)
 
       /*
       jsonFull { // implicitly passing the JsValue corresponding to the root, if it exists
