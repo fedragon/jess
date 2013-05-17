@@ -21,26 +21,19 @@ class JessPathSuite extends FunSuite {
   }
 
   test("JessPath.\\ should concatenate paths correctly") {
+    
     import JessPath.root
 
     val path = root \ "child"
-    val expected = JessPath (
-      Vector("/", "child")
+    val expected = new JessPath (
+      Vector("child")
     )
 
     assert(path === expected)
   }
 
-  test("JessPath.in should be able to extract fields from a path") {
-    import JessPath.root
-    import JessRule._
-
-    val path21 = root \ "2" \ "2.1"
-    val path3  = root \ "3"
-
-    new Data {
-      assert(path21.in(json2)   === Some(new JsNumber(456)))
-      assert(path3.in(jsonFull) === Some(new JsArray(Seq(new JsNumber(789)))))
-    }
+  test("Should be possible, sooner or later") {
+    
   }
+
 }
