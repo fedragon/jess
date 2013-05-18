@@ -37,9 +37,11 @@ object JessImplicits {
 			(name, new JsStringRule(f))
 		}
 
+		def is(seq: Validator*) = (name, new JsObjectRule(seq))
+
 		def asNum(f: JsNumber => Boolean) = (name, new JsNumberRule(f))
-		def asObj(seq: Seq[Validator]) = (name, new JsObjectRule(seq))
 		def asStr(f: JsString => Boolean) = (name, new JsStringRule(f))
+		def asObj(seq: Validator*) = (name, new JsObjectRule(seq))
 	}
 
 	implicit def stringToPimpedJsField(str: String) = new PimpedJsField(str)

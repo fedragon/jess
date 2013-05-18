@@ -10,14 +10,16 @@ class JessPathSuite extends FunSuite {
   import JessPredef._
 
   trait Data {
-
     val jsNumber = ("1", new JsNumber(123))
-    val jsString = ("4", new JsString("Prova"))
-    val jsObject = ("2", new JsObject(Seq(("2.1", new
-     JsNumber(456)))))
+    
+    val jsObject = ("2", new JsObject(
+      Seq(
+        ("2.1", new JsNumber(456)),
+        ("2.2", new JsString("AAA"))
+      ))
+    )
     val jsArray =  ("3", new JsArray(Seq(new JsNumber(789))))
-
-    val json2 = new JsObject(Seq(jsNumber, jsObject))
+    val jsString = ("4", new JsString("BBB"))
 
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray, jsString))
   }
@@ -63,8 +65,11 @@ class JessPathSuite extends FunSuite {
       using(jsonFull) { 
         json ( 
           "1" asNum (js => js.value == 123),
-          "2" asObj (Seq.empty),
-          "4" asStr (js => js.value == "Prova")
+          "2" asObj (
+            "2.1" is 456,
+            "2.2" is "AAA"
+          ),
+          "4" asStr (js => js.value == "BBB")
         )
       }
 
@@ -81,7 +86,11 @@ class JessPathSuite extends FunSuite {
       using(jsonFull) { 
         json ( 
           "1" is 123,
-          "4" is "Prova"
+          "2" is (
+            "2.1" is 456,
+            "2.2" is "AAA"
+          ),
+          "4" is "BBB"
         )
       }
 
