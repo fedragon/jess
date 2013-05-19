@@ -90,7 +90,7 @@ class JessSuite extends FunSuite {
             "2.1" is 456,
             "2.2" is "AAA"
           ),
-          "3" in (
+          "3" contains (
             JsNumberRule(n => n == 789)
           ),
           "4" is "BBB"
@@ -101,4 +101,30 @@ class JessSuite extends FunSuite {
     }
   }
 
+  test("Should be to validate a json string") {
+
+    new Data {
+      import ImplicitPimps._
+      
+      val jsonString = 
+        """{ 
+          "1": 123, 
+          "2": { 
+            "2.1": 456 
+          } 
+        }"""
+
+      val result = 
+      using(jsonString) { 
+        json ( 
+          "1" is 123,
+          "2" is (
+            "2.1" is 456
+          )
+        )
+      }
+
+      assert(result === true)
+    }
+  }
 }

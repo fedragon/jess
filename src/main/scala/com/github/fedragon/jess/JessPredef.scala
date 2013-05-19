@@ -9,6 +9,8 @@ object JessPredef {
 
 	def using(js: JsValue)(rule: JsObjectRule) = rule(js)
 
+  def using(js: String)(rule: JsObjectRule) = rule(parse(js))
+
 	def json(f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
 
 	// Play JSon type aliases

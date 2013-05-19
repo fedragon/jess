@@ -9,7 +9,7 @@ Jess provides a DSL that allows you to create a rule set to validate the content
 Jess works with path-based rules, which means: 
 * you don't need to provide class mappings for your JSon document;
 * you can implement just the rules you really care about;
-* you don't need to provide rules for all the fields in your JSon document (although you can).
+* you don't need to provide rules for all the fields in your JSon document (although you can, if you want).
 
 Jess relies on play.api.libs.json library.
 
@@ -27,18 +27,16 @@ test("should be able to check a single rule") {
     } 
   }"""
 
-  val path1 = root \ "1"
-  val path2 = root \ "2"
-
-  val rules = ensure { 
-      that (path1) { 
-        js: JsNumber => js.asInt == 123 
-      } +: that (path2) { 
-        js: JsObject => js.isNotEmpty 
-      }
+  using(jsonString) { 
+    json ( 
+      "1" is 123,
+      "2" is (
+        "2.1" is 456
+      )
+    )
   }
 
-  assert(rules.check(jsonString) === Seq(Geldig(path1), Geldig(path2)))
+  assert(result === true)
 }
 ```
 

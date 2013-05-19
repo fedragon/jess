@@ -1,6 +1,7 @@
 package com.github.fedragon.jess
 
 import JessPredef._
+import scala.util.matching.Regex
 
 class PimpedJsField(name: String) {
 
@@ -8,7 +9,7 @@ class PimpedJsField(name: String) {
 	def is(expected: String) = (name, JsStringRule(s => s == expected))
 	def is(seq: Validator*) = (name, JsObjectRule(seq))
 
-	def in(seq: JsValueRule*) = (name, JsArrayRule(seq))
+	def contains(seq: JsValueRule*) = (name, JsArrayRule(seq))
 
 	def asNum(f: BigDecimal => Boolean) = (name, JsNumberRule(f))
 	def asStr(f: String => Boolean) = (name, JsStringRule(f))
