@@ -12,7 +12,7 @@ case class JsNumberRule(f: BigDecimal => Boolean) extends JsValueRule {
 			case num: JsNumber => f(num.value)
 			case _ => throw new IllegalArgumentException("Invalid input")
 		}
-	}	
+	}
 }
 
 case class JsStringRule(f: String => Boolean) extends JsValueRule {
