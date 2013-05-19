@@ -27,7 +27,7 @@ class JessSuite extends FunSuite {
   test("Should be able to validate one rule") {    
 
     new Data {
-      import PimpedJsField._
+      import ImplicitPimps._
       
       val result = 
       using(jsonFull) { 
@@ -43,7 +43,7 @@ class JessSuite extends FunSuite {
   test("Should fail if at least one rule is not verified") {    
 
     new Data {
-      import PimpedJsField._
+      import ImplicitPimps._
       
       val result = 
       using(jsonFull) { 
@@ -59,7 +59,7 @@ class JessSuite extends FunSuite {
   test("Should be able to validate multiple rules") {    
 
     new Data {
-      import PimpedJsField._
+      import ImplicitPimps._
       
       val result = 
       using(jsonFull) { 
@@ -80,7 +80,7 @@ class JessSuite extends FunSuite {
   test("Should be to validate multiple rules with pimped syntax") {
 
     new Data {
-      import PimpedJsField._
+      import ImplicitPimps._
       
       val result = 
       using(jsonFull) { 

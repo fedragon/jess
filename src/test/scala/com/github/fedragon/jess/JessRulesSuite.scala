@@ -11,12 +11,19 @@ class JessRulesSuite extends FunSuite {
 
   trait Data {
     val jsNumber123 = new JsNumber(123)
+    val jsNumber456 = new JsNumber(456)
     val jsStringJa = new JsString("Ja")
     
     val jsObject = new JsObject(
       Seq(
         ("1", jsNumber123),
         ("2", jsStringJa)
+      )
+    )
+
+    val jsArray = new JsArray(
+      Seq(
+        jsNumber123, jsNumber456
       )
     )
   }
@@ -69,6 +76,26 @@ class JessRulesSuite extends FunSuite {
 
       val failingRule = JsObjectRule(Seq(("1", failNumRule), ("2", failStrRule)))
       assert(failingRule(jsObject) === false)
+
+      val thrown = intercept[IllegalArgumentException] {
+        val wrongInput: JsValue = jsNumber123
+        workingRule(wrongInput)
+      }
+      assert(thrown != null)      
+    }
+  }
+
+  test("JsArrayRule works") {    
+
+    new Data {
+      val okNumRule = JsNumberRule(n => n == 123)
+      val failNumRule = JsNumberRule(n => n == 0)
+
+      val workingRule = JsArrayRule(Seq(okNumRule))
+      assert(workingRule(jsArray) === true)
+
+      val failingRule = JsArrayRule(Seq(failNumRule))
+      assert(failingRule(jsArray) === false)
 
       val thrown = intercept[IllegalArgumentException] {
         val wrongInput: JsValue = jsNumber123

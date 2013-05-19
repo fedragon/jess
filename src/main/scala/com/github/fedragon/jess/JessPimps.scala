@@ -8,11 +8,13 @@ class PimpedJsField(name: String) {
 	def is(expected: String) = (name, new JsStringRule(s => s == expected))
 	def is(seq: Validator*) = (name, new JsObjectRule(seq))
 
+	def in(seq: JsValueRule*) = (name, new JsArrayRule(seq))
+
 	def asNum(f: BigDecimal => Boolean) = (name, new JsNumberRule(f))
 	def asStr(f: String => Boolean) = (name, new JsStringRule(f))
 	def asObj(seq: Validator*) = (name, new JsObjectRule(seq))
 }
 
-object PimpedJsField {
+object ImplicitPimps {
 	implicit def stringToPimpedJsField(fieldName: String) = new PimpedJsField(fieldName)
 }
