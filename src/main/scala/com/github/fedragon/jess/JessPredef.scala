@@ -21,28 +21,3 @@ object JessPredef {
   type JsArray  = play.api.libs.json.JsArray
   type JsUndefined  = play.api.libs.json.JsUndefined
 }
-
-object JessImplicits {
-	import JessPredef._
-
-	class PimpedJsField(name: String) {
-		
-		def is(expected: Number) = {
-			val f = (js: JsNumber) => js.value == expected
-			(name, new JsNumberRule(f))
-		}
-
-		def is(expected: String) = {
-			val f = (js: JsString) => js.value == expected
-			(name, new JsStringRule(f))
-		}
-
-		def is(seq: Validator*) = (name, new JsObjectRule(seq))
-
-		def asNum(f: JsNumber => Boolean) = (name, new JsNumberRule(f))
-		def asStr(f: JsString => Boolean) = (name, new JsStringRule(f))
-		def asObj(seq: Validator*) = (name, new JsObjectRule(seq))
-	}
-
-	implicit def stringToPimpedJsField(str: String) = new PimpedJsField(str)
-}
