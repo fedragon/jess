@@ -23,83 +23,131 @@ class JessRulesSuite extends FunSuite {
 
     val jsArray = new JsArray(
       Seq(
-        jsNumber123, jsNumber456
+        jsNumber123, jsNumber456, jsStringJa
       )
     )
   }
 
-  test("JsNumberRule works") {    
+  test("JsNumberRule works if actual input matches expected") {
 
     new Data {
-      val workingRule = JsNumberRule(n => n == 123)
-      assert(workingRule(jsNumber123) === true)
+      val rule = JsNumberRule(n => n == 123)
+      assert(rule(jsNumber123) === true) 
+    }
+  }
 
-      val failingRule = JsNumberRule(n => n == 0)
-      assert(failingRule(jsNumber123) === false)
+  test("JsNumberRule fails if actual input doesn't match expected") {
 
+    new Data {
+      val rule = JsNumberRule(n => n == 0)
+      assert(rule(jsNumber123) === false)
+    }
+  }
+
+  test("JsNumberRule throws exception on invalid input") {
+
+    new Data {
       val thrown = intercept[IllegalArgumentException] {
+        val rule = JsNumberRule(n => n == 123)
         val wrongInput: JsValue = jsStringJa
-        workingRule(wrongInput)
+        rule(wrongInput)
       }
       assert(thrown != null)      
     }
   }
 
-  test("JsStringRule works") {    
+  test("JsStringRule works if actual input matches expected") {
 
     new Data {
-      val workingRule = JsStringRule(s => s == "Ja")
-      assert(workingRule(jsStringJa) === true)
+      val rule = JsStringRule(s => s == "Ja")
+      assert(rule(jsStringJa) === true)   
+    }
+  }
 
-      val failingRule = JsStringRule(s => s == "Nee")
-      assert(failingRule(jsStringJa) === false)
+  test("JsStringRule fails if actual input doesn't match expected") {
 
+    new Data {
+      val rule = JsStringRule(s => s == "Nee")
+      assert(rule(jsStringJa) === false)
+    }
+  }
+
+  test("JsStringRule throws exception on invalid input") {
+
+    new Data {
       val thrown = intercept[IllegalArgumentException] {
+        val rule = JsStringRule(s => s == "Ja")
         val wrongInput: JsValue = jsNumber123
-        workingRule(wrongInput)
+        rule(wrongInput)
       }
       assert(thrown != null)      
     }
   }
 
-  test("JsObjectRule works") {    
+  test("JsObjectRule works if actual input matches expected") {
+
+    new Data {
+      val numRule = JsNumberRule(n => n == 123)
+      val strRule = JsStringRule(s => s == "Ja")
+
+      val objRule = JsObjectRule(Seq(("1", numRule), ("2", strRule)))
+      assert(objRule(jsObject) === true)
+    }
+  }
+
+  test("JsObjectRule fails if at least one rule fails") {
 
     new Data {
       val okNumRule = JsNumberRule(n => n == 123)
-      val failNumRule = JsNumberRule(n => n == 0)
-
-      val okStrRule = JsStringRule(s => s == "Ja")
       val failStrRule = JsStringRule(s => s == "Nee")
 
-      val workingRule = JsObjectRule(Seq(("1", okNumRule), ("2", okStrRule)))
-      assert(workingRule(jsObject) === true)
+      val objRule = JsObjectRule(Seq(("1", okNumRule), ("2", failStrRule)))
+      assert(objRule(jsObject) === false)
+    }
+  }
 
-      val failingRule = JsObjectRule(Seq(("1", failNumRule), ("2", failStrRule)))
-      assert(failingRule(jsObject) === false)
+  test("JsObjectRule throws exception on invalid input") {
 
+    new Data {
       val thrown = intercept[IllegalArgumentException] {
+        val objRule = JsObjectRule(Seq(("1", JsNumberRule(n => n == 123))))
         val wrongInput: JsValue = jsNumber123
-        workingRule(wrongInput)
+        objRule(wrongInput)
       }
       assert(thrown != null)      
     }
   }
 
-  test("JsArrayRule works") {    
+  test("JsArrayRule works if actual input matches expected") {    
 
     new Data {
-      val okNumRule = JsNumberRule(n => n == 123)
+      val numRule123 = JsNumberRule(n => n == 123)
+      val numRule456 = JsNumberRule(n => n == 456)
+      val strRule = JsStringRule(s => s == "Ja")
+
+      val arrayRule = JsArrayRule(Seq(numRule123, strRule, numRule456))
+      assert(arrayRule(jsArray) === true)
+    }
+  }
+
+  test("JsArrayRule fails if at least one rule fails") {    
+
+    new Data {
       val failNumRule = JsNumberRule(n => n == 0)
+      val okStrRule = JsStringRule(s => s == "Ja")
 
-      val workingRule = JsArrayRule(Seq(okNumRule))
-      assert(workingRule(jsArray) === true)
+      val arrayRule = JsArrayRule(Seq(failNumRule, okStrRule))
+      assert(arrayRule(jsArray) === false)
+    }
+  }
 
-      val failingRule = JsArrayRule(Seq(failNumRule))
-      assert(failingRule(jsArray) === false)
+  test("JsArrayRule throws exception on invalid input") {    
 
+    new Data {
       val thrown = intercept[IllegalArgumentException] {
-        val wrongInput: JsValue = jsNumber123
-        workingRule(wrongInput)
+        val arrayRule = JsArrayRule(Seq(JsNumberRule(n => n == 123)))
+        val wrongInput: JsValue = jsNumber456
+        arrayRule(wrongInput)
       }
       assert(thrown != null)      
     }
