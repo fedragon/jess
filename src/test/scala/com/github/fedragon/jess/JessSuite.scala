@@ -18,7 +18,7 @@ class JessSuite extends FunSuite {
         ("2.2", new JsString("AAA"))
       ))
     )
-    val jsArray =  ("3", new JsArray(Seq(new JsNumber(789))))
+    val jsArray =  ("3", new JsArray(Seq(new JsNumber(789), new JsString("CCC"))))
     val jsString = ("4", new JsString("BBB"))
 
     val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray, jsString))
@@ -89,6 +89,9 @@ class JessSuite extends FunSuite {
           "2" is (
             "2.1" is 456,
             "2.2" is "AAA"
+          ),
+          "3" in (
+            JsNumberRule(n => n == 789)
           ),
           "4" is "BBB"
         )

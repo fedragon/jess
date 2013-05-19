@@ -10,6 +10,7 @@ class JessRulesSuite extends FunSuite {
   import JessPredef._
 
   trait Data {
+    val jsBooleanTrue = new JsBoolean(true)
     val jsNumber123 = new JsNumber(123)
     val jsNumber456 = new JsNumber(456)
     val jsStringJa = new JsString("Ja")
@@ -26,6 +27,34 @@ class JessRulesSuite extends FunSuite {
         jsNumber123, jsNumber456, jsStringJa
       )
     )
+  }
+
+  test("JsBooleanRule works if actual input matches expected") {
+
+    new Data {
+      val rule = JsBooleanRule(true)
+      assert(rule(jsBooleanTrue) === true) 
+    }
+  }
+
+  test("JsBooleanRule fails if actual input doesn't match expected") {
+
+    new Data {
+      val rule = JsBooleanRule(false)
+      assert(rule(jsBooleanTrue) === false)
+    }
+  }
+
+  test("JsBooleanRule throws exception on invalid input") {
+
+    new Data {
+      val thrown = intercept[IllegalArgumentException] {
+        val rule = JsBooleanRule(false)
+        val wrongInput: JsValue = jsStringJa
+        rule(wrongInput)
+      }
+      assert(thrown != null)      
+    }
   }
 
   test("JsNumberRule works if actual input matches expected") {
