@@ -15,9 +15,8 @@ Jess relies on play.api.libs.json library.
 
 Example:
 ```scala
-test("should be able to check a single rule") {
-  import JessPath.root
-  import JessRule._
+test("Validate my Json string") {
+  import ImplicitPimps._
   
   val jsonString = 
   """{ 
@@ -27,14 +26,15 @@ test("should be able to check a single rule") {
     } 
   }"""
 
-  using(jsonString) { 
-    json ( 
-      "1" is 123,
-      "2" is (
-        "2.1" is 456
+  val result =
+    using(jsonString) { 
+      json ( 
+        "1" is 123,
+        "2" is (
+          "2.1" is 456
+        )
       )
-    )
-  }
+    }
 
   assert(result === true)
 }
