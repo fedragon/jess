@@ -5,7 +5,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JessPathSuite extends FunSuite {
+class JessSuite extends FunSuite {
 
   import JessPredef._
 
@@ -32,7 +32,7 @@ class JessPathSuite extends FunSuite {
       val result = 
       using(jsonFull) { 
         json ( 
-          "1" asNum (js => js.value == 123)
+          "1" asNum (n => n == 123)
         )
       }
 
@@ -48,7 +48,7 @@ class JessPathSuite extends FunSuite {
       val result = 
       using(jsonFull) { 
         json ( 
-          "5" is ""
+          "5" asStr (s => s == "")
         )
       }
 
@@ -64,12 +64,12 @@ class JessPathSuite extends FunSuite {
       val result = 
       using(jsonFull) { 
         json ( 
-          "1" asNum (js => js.value == 123),
+          "1" asNum (n => n == 123),
           "2" asObj (
-            "2.1" is 456,
-            "2.2" is "AAA"
+            "2.1" asNum (n => n == 456),
+            "2.2" asStr (s => s == "AAA")
           ),
-          "4" asStr (js => js.value == "BBB")
+          "4" asStr (s => s == "BBB")
         )
       }
 

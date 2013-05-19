@@ -6,19 +6,19 @@ abstract sealed class JsValueRule {
 	def apply(js: JsValue): Boolean
 }
 
-case class JsNumberRule(f: JsNumber => Boolean) extends JsValueRule {
+case class JsNumberRule(f: BigDecimal => Boolean) extends JsValueRule {
 	def apply(js: JsValue): Boolean = {
 		js match {
-			case num: JsNumber => f(num)
+			case num: JsNumber => f(num.value)
 			case _ => throw new IllegalArgumentException("Invalid input")
 		}
 	}	
 }
 
-case class JsStringRule(f: JsString => Boolean) extends JsValueRule {
+case class JsStringRule(f: String => Boolean) extends JsValueRule {
 	def apply(js: JsValue): Boolean = {
 		js match {
-			case str: JsString => f(str)
+			case str: JsString => f(str.value)
 			case _ => throw new IllegalArgumentException("Invalid input")
 		}
 	}	
