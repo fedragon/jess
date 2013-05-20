@@ -32,7 +32,7 @@ class JessRulesSuite extends FunSuite {
       Seq(jsNumber456))
   }
 
-  test("JsBooleanRule works if actual input matches expected") {
+  test("JsBooleanRule should work if actual input matches expected") {
 
     new Data {
       val rule = JsBooleanRule(true)
@@ -40,7 +40,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsBooleanRule fails if actual input doesn't match expected") {
+  test("JsBooleanRule should fail if actual input doesn't match expected") {
 
     new Data {
       val rule = JsBooleanRule(false)
@@ -48,7 +48,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsBooleanRule throws exception on invalid input") {
+  test("JsBooleanRule should throw exception on invalid input") {
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {
@@ -60,7 +60,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsNumberRule works if actual input matches expected") {
+  test("JsNumberRule should work if actual input matches expected") {
 
     new Data {
       val rule = JsNumberRule(n => n == 123)
@@ -68,7 +68,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsNumberRule fails if actual input doesn't match expected") {
+  test("JsNumberRule should fail if actual input doesn't match expected") {
 
     new Data {
       val rule = JsNumberRule(n => n == 0)
@@ -76,7 +76,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsNumberRule throws exception on invalid input") {
+  test("JsNumberRule should throw exception on invalid input") {
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {
@@ -88,7 +88,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsStringRule works if actual input matches expected") {
+  test("JsStringRule should work if actual input matches expected") {
 
     new Data {
       val rule = JsStringRule(s => s == "Ja")
@@ -96,7 +96,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsStringRule fails if actual input doesn't match expected") {
+  test("JsStringRule should fail if actual input doesn't match expected") {
 
     new Data {
       val rule = JsStringRule(s => s == "Nee")
@@ -104,7 +104,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsStringRule throws exception on invalid input") {
+  test("JsStringRule should throw exception on invalid input") {
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {
@@ -116,7 +116,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsObjectRule works if actual input matches expected") {
+  test("JsObjectRule should work if actual input matches expected") {
 
     new Data {
       val numRule = JsNumberRule(n => n == 123)
@@ -127,7 +127,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsObjectRule fails if at least one rule fails") {
+  test("JsObjectRule should fail if at least one rule fails") {
 
     new Data {
       val okNumRule = JsNumberRule(n => n == 123)
@@ -138,17 +138,17 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsObjectRule fails if at least one field doesn't exist") {
+  test("JsObjectRule should fail if at least one field doesn't exist") {
 
     new Data {
       val okNumRule = JsNumberRule(n => n == 123)
 
-      val objRule = JsObjectRule(Seq(("1", okNumRule), ("3", okNumRule)))
+      val objRule = JsObjectRule(Seq(("1", okNumRule), ("99", okNumRule)))
       assert(objRule(jsObject) === false)
     }
   }
 
-  test("JsObjectRule throws exception on invalid input") {
+  test("JsObjectRule should throw exception on invalid input") {
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {
@@ -160,7 +160,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsArrayRule works if actual input matches expected") {    
+  test("JsArrayRule should work if actual input matches expected") {    
 
     new Data {
       val numRule123 = JsNumberRule(n => n == 123)
@@ -172,7 +172,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsArrayRule fails if at least one rule fails") {    
+  test("JsArrayRule should fail if at least one rule fails") {    
 
     new Data {
       val failNumRule = JsNumberRule(n => n == 0)
@@ -183,7 +183,7 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
-  test("JsArrayRule throws exception on invalid input") {    
+  test("JsArrayRule should throw exception on invalid input") {    
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {

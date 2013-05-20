@@ -11,23 +11,36 @@ class JessSuite extends FunSuite {
 
   trait Data {
     val jsNumber = ("1", new JsNumber(123))
-    
+    val jsString = ("4", new JsString("BBB"))
+    val jsBoolean = ("5", new JsBoolean(false))
+
     val jsObject = ("2", new JsObject(
       Seq(
         ("2.1", new JsNumber(456)),
         ("2.2", new JsString("AAA"))
       ))
     )
-    val jsArray =  ("3", new JsArray(Seq(new JsNumber(789), new JsString("CCC"))))
-    val jsString = ("4", new JsString("BBB"))
-    val jsBoolean = ("5", new JsBoolean(false))
+    val jsArray =  ("3", new JsArray(
+      Seq(
+        new JsNumber(789), 
+        new JsString("CCC"),
+        new JsObject(
+          Seq(
+            ("3.1", new JsNumber(111d)),
+            ("3.2", new JsString("AAA"))
+          )),
+        new JsBoolean(false),
+        new JsArray(Seq(new JsNumber(222L), new JsNumber(333f)))
+      ))
+    )
+    
 
     val jsonFull = new JsObject(
       Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean)
     )
   }
 
-  test("Should be able to validate one rule") {    
+  test("Jess should be able to validate one rule") {    
 
     new Data {
       import ImplicitPimps._
@@ -43,7 +56,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("Should fail if at least one rule is not verified") {    
+  test("Jess should fail if at least one rule is not verified") {    
 
     new Data {
       import ImplicitPimps._
@@ -59,7 +72,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("Should be able to validate multiple rules") {    
+  test("Jess should be able to validate multiple rules") {    
 
     new Data {
       import ImplicitPimps._
@@ -72,7 +85,11 @@ class JessSuite extends FunSuite {
             "2.1" asNum (n => n == 456),
             "2.2" asStr (s => s == "AAA")
           ),
-          "4" asStr (s => s == "BBB")
+          "3" asArray (
+            JsNumberRule(n => n == 789)
+          ),
+          "4" asStr (s => s == "BBB"),
+          "5" asBool (false)
         )
       }
 
@@ -80,7 +97,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("Should be to validate multiple rules with pimped syntax") {
+  test("Jess should be to validate multiple rules with pimped syntax") {
 
     new Data {
       import ImplicitPimps._
@@ -93,8 +110,17 @@ class JessSuite extends FunSuite {
             "2.1" is 456,
             "2.2" is "AAA"
           ),
-          "3" isArray (
-            789
+          "3" is array (
+            789,
+            "CCC",
+            obj (
+              "3.1" is 111d,
+              "3.2" is "AAA"
+            ),
+            array (
+              222L, 333f
+            ),
+            false
           ),
           "4" is "BBB",
           "5" is false
@@ -105,7 +131,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("Should be able to validate a json string") {
+  test("Jess should be able to validate a json string") {
 
     new Data {
       import ImplicitPimps._
@@ -129,6 +155,31 @@ class JessSuite extends FunSuite {
       }
 
       assert(result === true)
+    }
+  }
+
+  test("Jess should crash on invalid json string") {
+
+    new Data {
+      import ImplicitPimps._
+      
+      val jsonString = 
+        """{ 
+          "1": 123, 
+          "2": { 
+            aaaaaaaaaaa 
+          } 
+        }"""
+
+      val thrown = intercept[IllegalArgumentException] { 
+        using(jsonString) { 
+          obj ( 
+            "1" is 123
+          )
+        }
+      }
+
+      assert(thrown != null)
     }
   }
 }

@@ -1,6 +1,6 @@
 * Add more predefined functions:
  - "1" isNot 123
- - "2" is r"<regex>"
+ - Improve JsArrayRule tests to handle unsupported input types
 
 * Figure out the best return type for rules' apply():
  - Plain old boolean --> not really helpful to understand what went wrong

@@ -20,6 +20,36 @@ object JessPredef {
 
 	def obj(f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
 
+  def array(values: Any*) = {
+    val rules =
+      values map { expected =>
+        expected match {
+          case b: Boolean => JsBooleanRule(b)
+          case s: String => JsStringRule(t => t == s)
+          case jr: JsValueRule => jr
+          case BigDecimalExtractor(bd) => JsNumberRule(n => n == bd)
+        }
+      }
+
+    JsArrayRule(rules)
+  }
+
+  private object BigDecimalExtractor {
+    def unapply(v: Any): Option[BigDecimal] = {
+      val result =
+        v match {
+          case bd: BigDecimal => bd
+          case s: Short => BigDecimal(s)
+          case i: Int => BigDecimal(i)
+          case l: Long => BigDecimal(l)
+          case d: Double => BigDecimal(d)
+          case f: Float => BigDecimal(f)
+          case other => throw new IllegalArgumentException(s"Invalid value: $other")
+        }
+      Some(result)
+    }
+  }
+
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
 

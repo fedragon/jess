@@ -23,41 +23,7 @@ trait AsString {
 trait AsArray {
 	this: PimpedJsField =>
 		def is(rule: JsArrayRule) = (name, rule)
-
-	  def array(f: JsValueRule, g: JsValueRule*) = JsArrayRule(Seq(f) ++ g)
-
-	  def isArray(values: Any*) = {
-	    val rules =
-		    values map { expected =>
-		      expected match {
-		        case b: Boolean => JsBooleanRule(b)
-		        case s: String => JsStringRule(t => t == s)
-		        case jr: JsValueRule => jr
-		        case BigDecimalExtractor(bd) => JsNumberRule(n => n == bd)
-		        case unknown => throw new IllegalArgumentException(s"Unsupported rule: $unknown")
-		      }
-		    }
-
-	    (name, JsArrayRule(rules))
-	  }
-
 	  def asArray(seq: JsValueRule*) = (name, JsArrayRule(seq))
-
-		private object BigDecimalExtractor {
-			def unapply(v: Any): Option[BigDecimal] = {
-				val result =
-					v match {
-						case bd: BigDecimal => bd
-						case s: Short => BigDecimal(s)
-						case i: Int => BigDecimal(i)
-						case l: Long => BigDecimal(l)
-						case d: Double => BigDecimal(d)
-						case f: Float => BigDecimal(f)
-						case other => throw new IllegalArgumentException(s"Invalid value: $other")
-					}
-				Some(result)
-			}
-		}
 }
 
 trait AsObject {
