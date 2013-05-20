@@ -1,7 +1,7 @@
 ## Jess
 ======
 
-Provides a DSL for creating and applying user-defined data validation rules on JSon documents.
+Validates your JSon document's data by applying a set of user-defined rules on it.
 
 ### Overview
 
