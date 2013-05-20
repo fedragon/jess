@@ -54,6 +54,35 @@ test("Validate my Json string") {
 }
 ```
 
+### Validation Result
+
+A validation result is represented by the following classes:
+```scala
+trait Result[+A] {
+  def passed: Boolean
+}
+
+case object Ok extends Result[Nothing] {
+  def passed: Boolean = true
+}
+case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
+  def passed: Boolean = false
+}
+```
+
+The idea is that if everything went well, you probably don't need any other information; on the other hand, if something went wrong you surely want to have more details, which is why Nok returns a sequence with all the fields that failed the validation. To understand whether your validation was successful or not, both the following approaches are viable, depending on your needs:
+
+```scala
+result.passed == true
+```
+
+```scala
+result match {
+  case Ok => // everything went well
+  case Nok(fields) => // here you can understand what went wrong
+}
+```
+
 ### License
 
 Redistribution and use in source and binary forms, with or without

@@ -52,7 +52,11 @@ class JessSuite extends FunSuite {
           )
         }
 
-      assert(result.passed === true)
+      result match {
+        case Ok => true
+        case Nok(fields) => fail()
+      }
+
     }
   }
 
