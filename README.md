@@ -15,7 +15,6 @@ Jess relies on play.api.libs.json library.
 
 Example:
 ```scala
-test("Validate my Json string") {
   import ImplicitPimps._
   
   val jsonString = 
@@ -50,8 +49,9 @@ test("Validate my Json string") {
       )
     }
 
-  assert(result.passed === true)
-}
+  if(result.passed == true)
+    println("Validation successful!")
+  else println("Something went wrong...")
 ```
 
 ### Validation Result
