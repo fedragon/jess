@@ -1,5 +1,7 @@
 package com.github.fedragon.jess
 
+import scala.util.{Try, Success, Failure}
+
 /**
  * Predefined classes and type aliases
  */
@@ -9,9 +11,14 @@ object JessPredef {
 
 	def using(js: JsValue)(rule: JsObjectRule) = rule(js)
 
-  def using(js: String)(rule: JsObjectRule) = rule(parse(js))
+  def using(jsonString: String)(rule: JsObjectRule) = {
+    Try(parse(jsonString)) match {
+      case Success(parsedJson) => rule(parsedJson)
+      case Failure(_) => throw new IllegalArgumentException("Invalid json!")
+    }
+  }
 
-	def json(f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
+	def obj(f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
 
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)

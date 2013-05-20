@@ -1,3 +1,6 @@
+import de.johoop.jacoco4sbt._
+import JacocoPlugin._
+
 name := "jess"
 
 version := "0.1.0"
@@ -9,6 +12,8 @@ scalacOptions ++= Seq("-deprecation")
 resolvers ++= Seq(
   "Typesafe Releases Repository" at "http://repo.typesafe.com/typesafe/releases/"
 )
+
+seq(jacoco.settings : _*)
 
 libraryDependencies += "play" % "play_2.10" % "2.1.1"
 

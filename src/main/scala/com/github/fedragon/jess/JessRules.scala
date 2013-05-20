@@ -72,6 +72,7 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule {
 	private def filterFieldsByRule(fields: Seq[JsValue], rule: JsValueRule): Seq[JsValue] = {
 		rule match {
 			case a: JsArrayRule => fields.filter(f => f.isInstanceOf[JsArray])
+			case b: JsBooleanRule => fields.filter(f => f.isInstanceOf[JsBoolean])
 			case n: JsNumberRule => fields.filter(f => f.isInstanceOf[JsNumber])
 			case o: JsObjectRule => fields.filter(f => f.isInstanceOf[JsObject])
 			case s: JsStringRule => fields.filter(f => f.isInstanceOf[JsString])

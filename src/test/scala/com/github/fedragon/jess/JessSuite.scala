@@ -20,8 +20,11 @@ class JessSuite extends FunSuite {
     )
     val jsArray =  ("3", new JsArray(Seq(new JsNumber(789), new JsString("CCC"))))
     val jsString = ("4", new JsString("BBB"))
+    val jsBoolean = ("5", new JsBoolean(false))
 
-    val jsonFull = new JsObject(Seq(jsNumber, jsObject, jsArray, jsString))
+    val jsonFull = new JsObject(
+      Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean)
+    )
   }
 
   test("Should be able to validate one rule") {    
@@ -31,7 +34,7 @@ class JessSuite extends FunSuite {
       
       val result = 
       using(jsonFull) { 
-        json ( 
+        obj ( 
           "1" asNum (n => n == 123)
         )
       }
@@ -47,8 +50,8 @@ class JessSuite extends FunSuite {
       
       val result = 
       using(jsonFull) { 
-        json ( 
-          "5" asStr (s => s == "")
+        obj ( 
+          "4" asStr (s => s == "")
         )
       }
 
@@ -63,7 +66,7 @@ class JessSuite extends FunSuite {
       
       val result = 
       using(jsonFull) { 
-        json ( 
+        obj ( 
           "1" asNum (n => n == 123),
           "2" asObj (
             "2.1" asNum (n => n == 456),
@@ -84,16 +87,17 @@ class JessSuite extends FunSuite {
       
       val result = 
       using(jsonFull) { 
-        json ( 
+        obj ( 
           "1" is 123,
           "2" is (
             "2.1" is 456,
             "2.2" is "AAA"
           ),
-          "3" contains (
-            JsNumberRule(n => n == 789)
+          "3" isArray (
+            789
           ),
-          "4" is "BBB"
+          "4" is "BBB",
+          "5" is false
         )
       }
 
@@ -101,7 +105,7 @@ class JessSuite extends FunSuite {
     }
   }
 
-  test("Should be to validate a json string") {
+  test("Should be able to validate a json string") {
 
     new Data {
       import ImplicitPimps._
@@ -116,7 +120,7 @@ class JessSuite extends FunSuite {
 
       val result = 
       using(jsonString) { 
-        json ( 
+        obj ( 
           "1" is 123,
           "2" is (
             "2.1" is 456

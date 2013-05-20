@@ -24,9 +24,12 @@ class JessRulesSuite extends FunSuite {
 
     val jsArray = new JsArray(
       Seq(
-        jsNumber123, jsNumber456, jsStringJa
+        jsNumber123, jsBooleanTrue, jsStringJa, jsObject, jsArray2
       )
     )
+
+    val jsArray2 = new JsArray(
+      Seq(jsNumber456))
   }
 
   test("JsBooleanRule works if actual input matches expected") {
@@ -151,10 +154,10 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val numRule123 = JsNumberRule(n => n == 123)
-      val numRule456 = JsNumberRule(n => n == 456)
+      val boolRule = JsBooleanRule(true)
       val strRule = JsStringRule(s => s == "Ja")
 
-      val arrayRule = JsArrayRule(Seq(numRule123, strRule, numRule456))
+      val arrayRule = JsArrayRule(Seq(numRule123, strRule, boolRule))
       assert(arrayRule(jsArray) === true)
     }
   }
