@@ -3,67 +3,67 @@ package com.github.fedragon.jess
 import JessPredef._
 
 abstract sealed class JsValueRule {
-	def apply(js: JsValue): Result
+	def apply(js: JsValue): Result[JsValue]
 
 	def invalidInput(input: JsValue) = throw new IllegalArgumentException(s"Invalid input: $input")
 }
 
 case class JsBooleanRule(f: Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result = {
+	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case bool: JsBoolean => 
-				if(f == bool.value) 
-					Result(Seq(bool), Seq.empty)
-				else Result(Seq.empty, Seq(bool))
+				if (f == bool.value) Ok
+				else Nok(Seq(bool))
 			case other => invalidInput(other)
 		}
 	}
 }
 
 case class JsNumberRule(f: BigDecimal => Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result = {
+	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case num: JsNumber => 
-				if(f(num.value))
-					Result(Seq(num), Seq.empty)
-				else Result(Seq.empty, Seq(num))
+				if (f(num.value)) Ok
+				else Nok(Seq(num))
 			case other => invalidInput(other)
 		}
 	}
 }
 
 case class JsStringRule(f: String => Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result = {
+	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case str: JsString => 
-				if(f(str.value))
-					Result(Seq(str), Seq.empty)
-				else Result(Seq.empty, Seq(str))
+				if (f(str.value)) Ok
+				else Nok(Seq(str))
 			case other => invalidInput(other)
 		}
 	}	
 }
 
 trait ComplexRule {
-	def reduce(results: Seq[Result]): Result = {
-		def reduce(res: Seq[Result], passed: Seq[JsValue], failed: Seq[JsValue]): Result = {
-			if(res.isEmpty) Result(passed, failed)
-			else {
-				val next = res.head
-
-				if(next.failed.isEmpty) 
-					reduce(res.tail, passed ++ next.passed, failed)
-				else reduce(res.tail, passed, failed ++ next.failed)
+	def reduce(results: Seq[Result[JsValue]]): Result[JsValue] = {
+		def reduce(res: Seq[Result[JsValue]], failed: Seq[JsValue]): Result[JsValue] = {
+			if(res.isEmpty) {
+				failed match {
+					case Seq() => Ok
+					case fields => Nok(fields)
+				}
+			} else {
+				res.head match {
+					case Ok => reduce(res.tail, failed)
+					case Nok(fields) => reduce(res.tail, failed ++ fields)
+				}
 			}
 		}
 
-		reduce(results, Seq.empty, Seq.empty)
+		reduce(results, Seq.empty)
 	}
 }
 
 case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with ComplexRule {
 
-	def apply(js: JsValue): Result = {
+	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case obj: JsObject =>
 				val results = 
@@ -84,7 +84,7 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Com
 
 case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with ComplexRule {
 
-	def apply(js: JsValue): Result = {
+	def apply(js: JsValue): Result[JsValue] = {
 		val results =
 			js match {
 				case array: JsArray =>
@@ -97,21 +97,21 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Complex
 		reduce(results)
 	}
 
-	private def getRuleResult(array: JsArray, rule: JsValueRule): Result = {
+	private def getRuleResult(array: JsArray, rule: JsValueRule): Result[JsValue] = {
 		val applicableFields = filterFieldsByRule(array.value, rule)
 
-		val validField: Option[Result] =
+		val validField: Option[Result[JsValue]] =
 			applicableFields.map(field => rule(field))
 				.find { res => 
 					res match {
-						case Result(passed, Seq()) => true
+						case Ok => true
 						case _ => false
 					}
 				}
 
 		validField match {
 			case Some(result) => result
-			case None => Result(Seq.empty, Seq(array))
+			case None => Nok(Seq(array))
 		}
 	}
 

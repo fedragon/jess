@@ -7,6 +7,17 @@ import scala.util.{Try, Success, Failure}
  */
 object JessPredef {
 
+  trait Result[+A] {
+    def passed: Boolean
+  }
+
+  case object Ok extends Result[Nothing] {
+    def passed: Boolean = true
+  }
+  case class Nok(failed: Seq[JsValue]) extends Result[JsValue] {
+    def passed: Boolean = false
+  }
+
 	type Validator = (String, JsValueRule)
 
 	def using(js: JsValue)(rule: JsObjectRule) = rule(js)
@@ -34,6 +45,18 @@ object JessPredef {
     JsArrayRule(rules)
   }
 
+	// Play JSon type aliases
+	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
+
+  type JsValue  = play.api.libs.json.JsValue
+  type JsBoolean = play.api.libs.json.JsBoolean
+  type JsString = play.api.libs.json.JsString
+  type JsNumber = play.api.libs.json.JsNumber
+  type JsObject = play.api.libs.json.JsObject
+  type JsArray  = play.api.libs.json.JsArray
+  type JsUndefined  = play.api.libs.json.JsUndefined
+  // ---
+
   private object BigDecimalExtractor {
     def unapply(v: Any): Option[BigDecimal] = {
       val result =
@@ -49,20 +72,4 @@ object JessPredef {
       Some(result)
     }
   }
-
-  case class Result(passed: Seq[JsValue], failed: Seq[JsValue]) {
-
-    val allesInOrde = !passed.isEmpty && failed.isEmpty
-  }
-
-	// Play JSon type aliases
-	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
-
-  type JsValue  = play.api.libs.json.JsValue
-  type JsBoolean = play.api.libs.json.JsBoolean
-  type JsString = play.api.libs.json.JsString
-  type JsNumber = play.api.libs.json.JsNumber
-  type JsObject = play.api.libs.json.JsObject
-  type JsArray  = play.api.libs.json.JsArray
-  type JsUndefined  = play.api.libs.json.JsUndefined
 }
