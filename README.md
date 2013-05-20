@@ -1,7 +1,7 @@
 ## Jess
 ======
 
-Minimal Scala library for creating and running user-defined data validation rules on JSon documents.
+Provides a DSL for creating and applying user-defined data validation rules on JSon documents.
 
 ### Overview
 
@@ -97,7 +97,8 @@ val result =
 ```
 
 ### Useful tips
-* Rules on arrays are not index-based: if your rule asks to check if the array contains a 789 value, this rule will be applied to any numeric value inside the array and it will be considered successful if at least one of these values satisfy the rule.
+* Rules on arrays are not index-based: if your rule wants to check if the array contains a 789 value, then this rule will be applied to any numeric value inside the array and it will be considered successful if at least one of them satisfies the rule.
+* Rules on objects return JsUndefined if they cannot find the field you were trying to validate;
 * If you need a test different than "this equals that", which is what the "is" method expands to, in this moment you cannot use the short syntax and you have to write the rule yourself like in one of the examples above; more DSL shortcuts are on their way.
 
 ### Validation Result
