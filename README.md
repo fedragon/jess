@@ -34,7 +34,7 @@ test("Validate my Json string") {
   }"""
 
   val result =
-    using(jsonString) { 
+    verifyThat (jsonString) { 
       obj ( 
         "1" is 123,
         "2" is (
@@ -50,7 +50,7 @@ test("Validate my Json string") {
       )
     }
 
-  assert(result === true)
+  assert(result.passed === true)
 }
 ```
 

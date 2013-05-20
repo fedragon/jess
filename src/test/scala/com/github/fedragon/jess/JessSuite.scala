@@ -46,7 +46,7 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-        using(jsonFull) { 
+        verifyThat (jsonFull) { 
           obj ( 
             "1" asNum (n => n == 123)
           )
@@ -62,7 +62,7 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-        using(jsonFull) { 
+        verifyThat (jsonFull) { 
           obj ( 
             "4" asStr (s => s == "")
           )
@@ -78,7 +78,7 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-        using(jsonFull) { 
+        verifyThat (jsonFull) { 
           obj ( 
             "1" asNum (n => n == 123),
             "2" asObj (
@@ -103,7 +103,7 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-        using(jsonFull) { 
+        verifyThat (jsonFull) { 
           obj ( 
             "1" is 123,
             "2" is (
@@ -145,7 +145,7 @@ class JessSuite extends FunSuite {
         }"""
 
       val result = 
-        using(jsonString) { 
+        verifyThat (jsonString) { 
           obj ( 
             "1" is 123,
             "2" is (
@@ -172,7 +172,7 @@ class JessSuite extends FunSuite {
         }"""
 
       val thrown = intercept[IllegalArgumentException] { 
-        using(jsonString) { 
+        verifyThat (jsonString) { 
           obj ( 
             "1" is 123
           )

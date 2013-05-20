@@ -14,24 +14,24 @@ object JessPredef {
   case object Ok extends Result[Nothing] {
     def passed: Boolean = true
   }
-  case class Nok(failed: Seq[JsValue]) extends Result[JsValue] {
+  case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
     def passed: Boolean = false
   }
 
 	type Validator = (String, JsValueRule)
 
-	def using(js: JsValue)(rule: JsObjectRule) = rule(js)
+	def verifyThat (js: JsValue)(rule: JsObjectRule) = rule(js)
 
-  def using(jsonString: String)(rule: JsObjectRule) = {
+  def verifyThat (jsonString: String)(rule: JsObjectRule) = {
     Try(parse(jsonString)) match {
       case Success(parsedJson) => rule(parsedJson)
       case Failure(_) => throw new IllegalArgumentException("Invalid json!")
     }
   }
 
-	def obj(f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
+	def obj (f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
 
-  def array(values: Any*) = {
+  def array (values: Any*) = {
     val rules =
       values map { expected =>
         expected match {
@@ -46,7 +46,7 @@ object JessPredef {
   }
 
 	// Play JSon type aliases
-	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
+	def parse (jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
 
   type JsValue  = play.api.libs.json.JsValue
   type JsBoolean = play.api.libs.json.JsBoolean

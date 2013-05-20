@@ -42,8 +42,8 @@ case class JsStringRule(f: String => Boolean) extends JsValueRule {
 }
 
 trait ComplexRule {
-	def reduce(results: Seq[Result[JsValue]]): Result[JsValue] = {
-		def reduce(res: Seq[Result[JsValue]], failed: Seq[JsValue]): Result[JsValue] = {
+	def compact (results: Seq[Result[JsValue]]): Result[JsValue] = {
+		def compact (res: Seq[Result[JsValue]], failed: Seq[JsValue]): Result[JsValue] = {
 			if(res.isEmpty) {
 				failed match {
 					case Seq() => Ok
@@ -51,13 +51,13 @@ trait ComplexRule {
 				}
 			} else {
 				res.head match {
-					case Ok => reduce(res.tail, failed)
-					case Nok(fields) => reduce(res.tail, failed ++ fields)
+					case Ok => compact (res.tail, failed)
+					case Nok(fields) => compact (res.tail, failed ++ fields)
 				}
 			}
 		}
 
-		reduce(results, Seq.empty)
+		compact (results, Seq.empty)
 	}
 }
 
@@ -69,14 +69,14 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Com
 				val results = 
 					validators map { validator =>
 						obj \ validator._1 match {
-							case notFound: JsUndefined => 
+							case _: JsUndefined => 
 								Nok(Seq(new JsUndefined(validator._1)))
 							case value @ _ =>
 								validator._2(value)
 						}
 					}
 
-				reduce(results)
+				compact (results)
 			case other => invalidInput(other)
 		}
 	}
@@ -94,7 +94,7 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Complex
 				case other => invalidInput(other)
 			}
 
-		reduce(results)
+		compact (results)
 	}
 
 	private def getRuleResult(array: JsArray, rule: JsValueRule): Result[JsValue] = {
