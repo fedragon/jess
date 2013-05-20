@@ -50,6 +50,11 @@ object JessPredef {
     }
   }
 
+  case class Result(passed: Seq[JsValue], failed: Seq[JsValue]) {
+
+    val allesInOrde = !passed.isEmpty && failed.isEmpty
+  }
+
 	// Play JSon type aliases
 	def parse(jsonString: String): JsValue = play.api.libs.json.Json.parse(jsonString)
 

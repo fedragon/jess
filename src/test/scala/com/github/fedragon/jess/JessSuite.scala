@@ -52,7 +52,7 @@ class JessSuite extends FunSuite {
         )
       }
 
-      assert(result === true)
+      assert(result.allesInOrde === true)
     }
   }
 
@@ -68,7 +68,7 @@ class JessSuite extends FunSuite {
         )
       }
 
-      assert(result === false)
+      assert(result.allesInOrde === false)
     }
   }
 
@@ -93,7 +93,7 @@ class JessSuite extends FunSuite {
         )
       }
 
-      assert(result === true)
+      assert(result.allesInOrde === true)
     }
   }
 
@@ -127,7 +127,7 @@ class JessSuite extends FunSuite {
         )
       }
 
-      assert(result === true)
+      assert(result.allesInOrde === true)
     }
   }
 
@@ -154,7 +154,7 @@ class JessSuite extends FunSuite {
         )
       }
 
-      assert(result === true)
+      assert(result.allesInOrde === true)
     }
   }
 

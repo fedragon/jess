@@ -36,7 +36,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsBooleanRule(true)
-      assert(rule(jsBooleanTrue) === true) 
+      assert(rule(jsBooleanTrue).allesInOrde === true) 
     }
   }
 
@@ -44,7 +44,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsBooleanRule(false)
-      assert(rule(jsBooleanTrue) === false)
+      assert(rule(jsBooleanTrue).allesInOrde === false)
     }
   }
 
@@ -64,7 +64,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsNumberRule(n => n == 123)
-      assert(rule(jsNumber123) === true) 
+      assert(rule(jsNumber123).allesInOrde === true) 
     }
   }
 
@@ -72,7 +72,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsNumberRule(n => n == 0)
-      assert(rule(jsNumber123) === false)
+      assert(rule(jsNumber123).allesInOrde === false)
     }
   }
 
@@ -92,7 +92,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsStringRule(s => s == "Ja")
-      assert(rule(jsStringJa) === true)   
+      assert(rule(jsStringJa).allesInOrde === true)   
     }
   }
 
@@ -100,7 +100,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsStringRule(s => s == "Nee")
-      assert(rule(jsStringJa) === false)
+      assert(rule(jsStringJa).allesInOrde === false)
     }
   }
 
@@ -123,7 +123,7 @@ class JessRulesSuite extends FunSuite {
       val strRule = JsStringRule(s => s == "Ja")
 
       val objRule = JsObjectRule(Seq(("1", numRule), ("2", strRule)))
-      assert(objRule(jsObject) === true)
+      assert(objRule(jsObject).allesInOrde === true)
     }
   }
 
@@ -134,7 +134,7 @@ class JessRulesSuite extends FunSuite {
       val failStrRule = JsStringRule(s => s == "Nee")
 
       val objRule = JsObjectRule(Seq(("1", okNumRule), ("2", failStrRule)))
-      assert(objRule(jsObject) === false)
+      assert(objRule(jsObject).allesInOrde === false)
     }
   }
 
@@ -144,7 +144,7 @@ class JessRulesSuite extends FunSuite {
       val okNumRule = JsNumberRule(n => n == 123)
 
       val objRule = JsObjectRule(Seq(("1", okNumRule), ("99", okNumRule)))
-      assert(objRule(jsObject) === false)
+      assert(objRule(jsObject).allesInOrde === false)
     }
   }
 
@@ -168,7 +168,7 @@ class JessRulesSuite extends FunSuite {
       val strRule = JsStringRule(s => s == "Ja")
 
       val arrayRule = JsArrayRule(Seq(numRule123, strRule, boolRule))
-      assert(arrayRule(jsArray) === true)
+      assert(arrayRule(jsArray).allesInOrde === true)
     }
   }
 
@@ -179,7 +179,7 @@ class JessRulesSuite extends FunSuite {
       val okStrRule = JsStringRule(s => s == "Ja")
 
       val arrayRule = JsArrayRule(Seq(failNumRule, okStrRule))
-      assert(arrayRule(jsArray) === false)
+      assert(arrayRule(jsArray).allesInOrde === false)
     }
   }
 
