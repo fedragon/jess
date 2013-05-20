@@ -46,11 +46,11 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-      using(jsonFull) { 
-        obj ( 
-          "1" asNum (n => n == 123)
-        )
-      }
+        using(jsonFull) { 
+          obj ( 
+            "1" asNum (n => n == 123)
+          )
+        }
 
       assert(result.passed === true)
     }
@@ -62,11 +62,11 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-      using(jsonFull) { 
-        obj ( 
-          "4" asStr (s => s == "")
-        )
-      }
+        using(jsonFull) { 
+          obj ( 
+            "4" asStr (s => s == "")
+          )
+        }
 
       assert(result.passed === false)
     }
@@ -78,20 +78,20 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-      using(jsonFull) { 
-        obj ( 
-          "1" asNum (n => n == 123),
-          "2" asObj (
-            "2.1" asNum (n => n == 456),
-            "2.2" asStr (s => s == "AAA")
-          ),
-          "3" asArray (
-            JsNumberRule(n => n == 789)
-          ),
-          "4" asStr (s => s == "BBB"),
-          "5" asBool (false)
-        )
-      }
+        using(jsonFull) { 
+          obj ( 
+            "1" asNum (n => n == 123),
+            "2" asObj (
+              "2.1" asNum (n => n == 456),
+              "2.2" asStr (s => s == "AAA")
+            ),
+            "3" asArray (
+              JsNumberRule(n => n == 789)
+            ),
+            "4" asStr (s => s == "BBB"),
+            "5" asBool (false)
+          )
+        }
 
       assert(result.passed === true)
     }
@@ -103,29 +103,29 @@ class JessSuite extends FunSuite {
       import ImplicitPimps._
       
       val result = 
-      using(jsonFull) { 
-        obj ( 
-          "1" is 123,
-          "2" is (
-            "2.1" is 456,
-            "2.2" is "AAA"
-          ),
-          "3" is array (
-            789,
-            "CCC",
-            obj (
-              "3.1" is 111d,
-              "3.2" is "AAA"
+        using(jsonFull) { 
+          obj ( 
+            "1" is 123,
+            "2" is (
+              "2.1" is 456,
+              "2.2" is "AAA"
             ),
-            array (
-              222L, 333f
+            "3" is array (
+              789,
+              "CCC",
+              obj (
+                "3.1" is 111d,
+                "3.2" is "AAA"
+              ),
+              array (
+                222L, 333f
+              ),
+              false
             ),
-            false
-          ),
-          "4" is "BBB",
-          "5" is false
-        )
-      }
+            "4" is "BBB",
+            "5" is false
+          )
+        }
 
       assert(result.passed === true)
     }
@@ -145,14 +145,14 @@ class JessSuite extends FunSuite {
         }"""
 
       val result = 
-      using(jsonString) { 
-        obj ( 
-          "1" is 123,
-          "2" is (
-            "2.1" is 456
+        using(jsonString) { 
+          obj ( 
+            "1" is 123,
+            "2" is (
+              "2.1" is 456
+            )
           )
-        )
-      }
+        }
 
       assert(result.passed === true)
     }
