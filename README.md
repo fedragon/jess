@@ -20,18 +20,32 @@ test("Validate my Json string") {
   
   val jsonString = 
   """{ 
-    "1": 123, 
-    "2": { 
+    "1" : 123, 
+    "2" : { 
       "2.1": 456 
-    } 
+    },
+    "3" : [
+      789,
+      false,
+      {
+        "a" : "something"
+      }
+    ]
   }"""
 
   val result =
     using(jsonString) { 
-      json ( 
+      obj ( 
         "1" is 123,
         "2" is (
           "2.1" is 456
+        ),
+        "3" is array (
+          789,
+          false,
+          obj (
+            "a" is "something"
+          )
         )
       )
     }
