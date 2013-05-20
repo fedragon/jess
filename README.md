@@ -54,6 +54,52 @@ Example:
   else println("Something went wrong...")
 ```
 
+### How does it work?
+
+Jess relies on rules, that are, at their core, wrappers for functions f: JsValue => Boolean.
+The DSL hides this (as much as possible), providing additional methods that allow you to just provide the value you want to match against, rather than create the rule yourself. For example:
+
+```scala
+obj (
+  "1" is 123
+)
+```
+
+is a shortcut for
+
+```scala
+JsObjectRule("1", JsNumberRule(n => n == 123)
+```
+
+To perform your validation you can either: 
+
+* Create your rule and use it on the fly:
+
+```scala
+val result =
+  verifyThat(myJsonString) {
+    obj (
+      "1" is 123
+    )
+  }
+```
+* Create the rule, store it in a variable and use it later on:
+
+```scala
+  val myRule =
+    obj (
+      "1" is 123
+    )
+
+  ...
+
+  val result = verifyThat(myJsonString)(myRule)
+```
+
+### Useful tips
+* Rules on arrays are not index-based: if your rule asks to check if the array contains a 789 value, this rule will be applied to any numeric value inside the array and it will be considered successful if at least one of these values satisfy the rule.
+* If you need a test different than "this equals that", which is what the "is" method expands to, in this moment you cannot use the short syntax and you have to write the rule yourself like in one of the examples above; more DSL shortcuts are on their way.
+
 ### Validation Result
 
 A validation result is represented by the following classes:
@@ -65,6 +111,7 @@ trait Result[+A] {
 case object Ok extends Result[Nothing] {
   def passed: Boolean = true
 }
+
 case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
   def passed: Boolean = false
 }
