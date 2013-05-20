@@ -138,6 +138,16 @@ class JessRulesSuite extends FunSuite {
     }
   }
 
+  test("JsObjectRule fails if at least one field doesn't exist") {
+
+    new Data {
+      val okNumRule = JsNumberRule(n => n == 123)
+
+      val objRule = JsObjectRule(Seq(("1", okNumRule), ("3", okNumRule)))
+      assert(objRule(jsObject) === false)
+    }
+  }
+
   test("JsObjectRule throws exception on invalid input") {
 
     new Data {
