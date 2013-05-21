@@ -33,7 +33,6 @@ class JessSuite extends FunSuite {
         new JsArray(Seq(new JsNumber(222L), new JsNumber(333f)))
       ))
     )
-    
 
     val jsonFull = new JsObject(
       Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean)
@@ -154,6 +153,36 @@ class JessSuite extends FunSuite {
             "1" is 123,
             "2" is (
               "2.1" is 456
+            )
+          )
+        }
+
+      assert(result.passed === true)
+    }
+  }
+
+  test("New DSL functions work") {
+
+    new Data {
+      import ImplicitPimps._
+      
+      val jsonString = 
+        """{ 
+          "1": 123, 
+          "2": { 
+            "2.1": 456,
+            "2.2": "abc" 
+          } 
+        }"""
+
+      val result = 
+        verifyThat (jsonString) { 
+          obj ( 
+            "1" isNot 456,
+            "2" is (
+              "2.1" is 456,
+              "2.2" in "^.*$",
+              "2.2" isNot "def"
             )
           )
         }

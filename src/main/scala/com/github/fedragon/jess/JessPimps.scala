@@ -5,18 +5,22 @@ import JessPredef._
 trait AsBoolean {
 	this: PimpedJsField =>
 		def is(expected: Boolean) = (name, JsBooleanRule(expected))
+		def isNot(expected: Boolean) = (name, JsBooleanRule(!expected))
 		def asBool(f: Boolean) = (name, JsBooleanRule(f))
 }
 
 trait AsNumber {
 	this: PimpedJsField =>
 		def is(expected: BigDecimal) = (name, JsNumberRule(n => n == expected))
+		def isNot(expected: BigDecimal) = (name, JsNumberRule(n => n != expected))
 		def asNum(f: BigDecimal => Boolean) = (name, JsNumberRule(f))
 }
 
 trait AsString {
 	this: PimpedJsField =>
 		def is(expected: String) = (name, JsStringRule(s => s == expected))
+		def isNot(expected: String) = (name, JsStringRule(s => s != expected))
+		def in(regex: String) = (name, JsStringRule(s => (regex.r findFirstIn s).nonEmpty))
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
 
