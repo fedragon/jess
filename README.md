@@ -40,7 +40,7 @@ Example:
       obj ( 
         "1" is 123,
         "2" is (
-          "2.1" is 456f
+          "2.1" is 456.7
         ),
         "3" is array (
           789,
