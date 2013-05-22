@@ -41,7 +41,24 @@ class PimpedJsField(val name: String)
 		with AsNumber
 		with AsString
 		with AsObject
-		with AsArray
+		with AsArray {
+
+	def isNull = {
+		val rule = new JsValueRule {
+
+			import play.api.libs.json.JsNull
+
+			def apply(js: JsValue): Result[JsValue] = {
+				js match {
+					case JsNull => Ok
+					case _ => Nok(Seq(js))
+				}
+			}
+		}
+
+		(name, rule)
+	}
+}
 
 object ImplicitPimps {
 	implicit def stringToPimpedJsField(fieldName: String) = new PimpedJsField(fieldName)
