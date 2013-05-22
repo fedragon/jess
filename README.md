@@ -103,14 +103,14 @@ val result =
 ```
 
 ### Pre-defined rules (work in progress)
-* "fieldName" is <boolean|number|string|array rule|object rule>
+* "fieldName" is boolean|number|string|array-rule|object-rule
   * verifies that the field value is equal to the value you provided, or that the array/object rule is verified
-* "fieldName" isNot <boolean|number|string|array rule|object rule>
-  * verifies that the field value is not equal to the value you provided, or that the array/object rule is not verified
+* "fieldName" isNot boolean|number|string|array-rule|object-rule
+  * verifies that the field value is NOT equal to the value you provided, or that the array/object rule is not verified
 * "fieldName" isNull
-  * verifies that the field value is equal to null or to the empty string
+  * verifies that the field value is equal either to null or to the empty string
 * "fieldName" in "regular expression"
-  * verifies that the field value can be matched using the regular expression you provided
+  * verifies that the field value can be matched using the regular expression string you provided
 
 ### Useful tips
 * Rules on arrays are not index-based: if your rule wants to check if the array contains a 789 value, then this rule will be applied to any numeric value inside the array and it will be considered successful if at least one of them satisfies the rule.
