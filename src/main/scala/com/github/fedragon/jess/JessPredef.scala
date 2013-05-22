@@ -55,6 +55,8 @@ object JessPredef {
   type JsObject = play.api.libs.json.JsObject
   type JsArray  = play.api.libs.json.JsArray
   type JsUndefined  = play.api.libs.json.JsUndefined
+
+  val JsNull = play.api.libs.json.JsNull
   // ---
 
   private object BigDecimalExtractor {

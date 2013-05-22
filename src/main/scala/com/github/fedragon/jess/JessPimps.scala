@@ -46,8 +46,6 @@ class PimpedJsField(val name: String)
 	def isNull = {
 		val rule = new JsValueRule {
 
-			import play.api.libs.json.JsNull
-
 			def apply(js: JsValue): Result[JsValue] = {
 				js match {
 					case JsNull => Ok
