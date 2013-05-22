@@ -173,7 +173,8 @@ class JessSuite extends FunSuite {
             "2.1": 456,
             "2.2": "abc" 
           },
-          "9" : null 
+          "9": null,
+          "10": ""
         }"""
 
       val result = 
@@ -185,7 +186,8 @@ class JessSuite extends FunSuite {
               "2.2" in "^.*$",
               "2.2" isNot "def"
             ),
-            "9" isNull
+            "9" isNull,
+            "10" isNull
           )
         }
 

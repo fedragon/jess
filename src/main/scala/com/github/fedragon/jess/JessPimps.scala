@@ -36,27 +36,31 @@ trait AsObject {
 		def asObj(seq: Validator*) = (name, JsObjectRule(seq))
 }
 
+trait AsNull {
+	this: PimpedJsField =>
+		def isNull = {
+			val rule = new JsValueRule {
+
+				def apply(js: JsValue): Result[JsValue] = {
+					js match {
+						case JsNull => Ok
+						case str: JsString => if(str.value == null || str.value.trim == "") Ok else Nok(Seq(str))
+						case _ => Nok(Seq(js))
+					}
+				}
+			}
+
+			(name, rule)
+		}
+}
+
 class PimpedJsField(val name: String) 
 	extends AsBoolean 
 		with AsNumber
 		with AsString
 		with AsObject
-		with AsArray {
-
-	def isNull = {
-		val rule = new JsValueRule {
-
-			def apply(js: JsValue): Result[JsValue] = {
-				js match {
-					case JsNull => Ok
-					case _ => Nok(Seq(js))
-				}
-			}
-		}
-
-		(name, rule)
-	}
-}
+		with AsArray 
+		with AsNull
 
 object ImplicitPimps {
 	implicit def stringToPimpedJsField(fieldName: String) = new PimpedJsField(fieldName)
