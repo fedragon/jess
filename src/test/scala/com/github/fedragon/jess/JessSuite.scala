@@ -113,7 +113,7 @@ class JessSuite extends FunSuite {
           obj ( 
             "1" is 123,
             "2" is (
-              "2.1" is 456,
+              "2.1" isBetween (123, 456),
               "2.2" is "AAA"
             ),
             "3" is array (

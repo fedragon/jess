@@ -14,6 +14,11 @@ trait AsNumber {
 	this: PimpedJsField =>
 		def is(expected: BigDecimal) = asNum(n => n == expected)
 		def isNot(expected: BigDecimal) = asNum(n => n != expected)
+		def isLessThan(expected: BigDecimal) = asNum(n => n < expected)
+		def isLessOrEqual(expected: BigDecimal) = asNum(n => n <= expected)
+		def isGreaterThan(expected: BigDecimal) = asNum(n => n > expected)
+		def isGreaterOrEqual(expected: BigDecimal) = asNum(n => n >= expected)
+		def isBetween(lowerBound: BigDecimal, upperBound: BigDecimal) = asNum(n => n >= lowerBound && n <= upperBound)
 
 		def asNum(f: BigDecimal => Boolean) = (name, JsNumberRule(f))
 }
@@ -23,7 +28,7 @@ trait AsString {
 		def is(expected: String) = asStr(s => s == expected)
 		def isNot(expected: String) = asStr(s => s != expected)
 		def in(regex: String) = asStr(s => s.matches(regex))
-		
+
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
 
