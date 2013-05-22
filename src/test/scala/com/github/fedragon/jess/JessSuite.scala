@@ -45,7 +45,7 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate one rule") {    
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
       
       val result = 
         verifyThat (jsonFull) { 
@@ -65,7 +65,7 @@ class JessSuite extends FunSuite {
   test("Jess should fail if at least one rule is not verified") {    
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
       
       val result = 
         verifyThat (jsonFull) { 
@@ -81,7 +81,7 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate multiple rules") {    
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
       
       val result = 
         verifyThat (jsonFull) { 
@@ -106,7 +106,7 @@ class JessSuite extends FunSuite {
   test("Jess should be to validate multiple rules with pimped syntax") {
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
       
       val result = 
         verifyThat (jsonFull) { 
@@ -142,7 +142,7 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate a json string") {
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
 
       val jsonString = 
         """{ 
@@ -189,7 +189,7 @@ class JessSuite extends FunSuite {
   test("Jess should crash on invalid json string") {
 
     new Data {
-      import ImplicitPimps._
+      import JessPimps._
       
       val jsonString = 
         """{ 

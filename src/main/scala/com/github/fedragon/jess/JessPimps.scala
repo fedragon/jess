@@ -70,6 +70,6 @@ class PimpedJsField(val name: String)
 		with AsArray 
 		with AsNull
 
-object ImplicitPimps {
+object JessPimps {
 	implicit def stringToPimpedJsField(fieldName: String) = new PimpedJsField(fieldName)
 }

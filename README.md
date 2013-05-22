@@ -15,7 +15,7 @@ Jess relies on play.api.libs.json library.
 
 Example:
 ```scala
-  import ImplicitPimps._
+  import JessPimps._
   
   val jsonString = 
   """{ 
