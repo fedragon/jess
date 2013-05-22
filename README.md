@@ -104,13 +104,13 @@ val result =
 ```
 
 ### Pre-defined rules (work in progress)
-* "fieldName" is boolean|number|string|array-rule|object-rule
+* "fieldName" *__is__* boolean|number|string|array-rule|object-rule
   * verifies that the field value is equal to the value you provided, or that the array/object rule is verified
-* "fieldName" isNot boolean|number|string|array-rule|object-rule
+* "fieldName" *__isNot__* boolean|number|string|array-rule|object-rule
   * verifies that the field value is NOT equal to the value you provided, or that the array/object rule is not verified
-* "fieldName" isNull
+* "fieldName" *__isNull__*
   * verifies that the field value is equal either to null or to the empty string
-* "fieldName" in "regular expression"
+* "fieldName" *__in__* "regular expression"
   * verifies that the field value can be matched using the regular expression string you provided
 
 ### Useful tips
