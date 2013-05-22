@@ -3,7 +3,7 @@ package com.github.fedragon.jess
 import scala.util.{Try, Success, Failure}
 
 /**
- * Predefined classes and type aliases
+ * Jess common classes, utility methods and type aliases
  */
 object JessPredef {
 
@@ -14,23 +14,55 @@ object JessPredef {
   case object Ok extends Result[Nothing] {
     def passed: Boolean = true
   }
+
   case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
     def passed: Boolean = false
   }
 
 	type Validator = (String, JsValueRule)
 
-	def verifyThat (js: JsValue)(rule: JsObjectRule) = rule(js)
+  /**
+   * Applies the rule to the js value and returns its result.
+   *
+   * @param js json value to validate
+   * @param rule rule to use to validate the json value
+   * @return validation result
+   */
+	def verifyThat (js: JsValue)(rule: JsObjectRule): Result[JsValue] = rule(js)
 
-  def verifyThat (jsonString: String)(rule: JsObjectRule) = {
+  /**
+   * Applies the rule to the js document and returns its result. 
+   * Throws an IllegalArgumentException if provided string is not a valid json document.
+   *
+   * @param js json value to validate
+   * @param rule rule to use to validate the json value
+   * @return validation result
+   *
+   * @throw IllegalArgumentException if provided string is not a valid json document
+   */
+  def verifyThat (jsonString: String)(rule: JsObjectRule): Result[JsValue] = {
     Try(parse(jsonString)) match {
       case Success(parsedJson) => rule(parsedJson)
       case Failure(_) => throw new IllegalArgumentException("Invalid json!")
     }
   }
 
-	def obj (f: Validator, g: Validator*) = JsObjectRule(Seq(f) ++ g)
+  /**
+   * Creates and returns an object rule combining the provided validators.
+   *
+   * @param f pair (field_name, rule)
+   * @param g additional (optional) validators
+   * @return created object rule
+   */
+	def obj (f: Validator, g: Validator*): JsObjectRule = JsObjectRule(Seq(f) ++ g)
 
+  /**
+   * Creates and returns an array rule combining the provided validators.
+   *
+   * @param f pair (field_name, rule)
+   * @param g additional (optional) validators
+   * @return created array rule
+   */
   def array (values: Any*) = {
     val rules =
       values map { expected =>
