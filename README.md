@@ -21,7 +21,7 @@ Example:
   """{ 
     "1" : 123, 
     "2" : { 
-      "2.1": 456 
+      "2.1": 456.7 
     },
     "3" : [
       789,
@@ -40,7 +40,7 @@ Example:
       obj ( 
         "1" is 123,
         "2" is (
-          "2.1" is 456
+          "2.1" is 456f
         ),
         "3" is array (
           789,
@@ -77,6 +77,7 @@ is a shortcut for
 JsObjectRule("1", JsNumberRule(n => n == 123)
 ```
 
+Jess infers the type of the rule from the type of the value you provide (a numeric value in this case, thus he creates a JsNumberRule).
 To perform your validation you can either: 
 
 * Create your rule and use it on the fly:
