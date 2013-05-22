@@ -143,13 +143,23 @@ class JessSuite extends FunSuite {
 
     new Data {
       import ImplicitPimps._
-      
+
       val jsonString = 
         """{ 
-          "1": 123, 
-          "2": { 
-            "2.1": 456 
-          } 
+          "1" : 123, 
+          "2" : { 
+            "2.1": 456.7 
+          },
+          "3" : [
+            789,
+            false,
+            {
+              "a" : "something",
+              "b" : null,
+              "c" : ""
+            }
+          ],
+          "4" : "abcd"
         }"""
 
       val result = 
@@ -157,8 +167,18 @@ class JessSuite extends FunSuite {
           obj ( 
             "1" is 123,
             "2" is (
-              "2.1" is 456
-            )
+              "2.1" is 456.7
+            ),
+            "3" is array (
+              789,
+              false,
+              obj (
+                "a" is "something",
+                "b" isNull,
+                "c" isNull
+              )
+            ),
+            "4" in "[a-z]*"
           )
         }
 

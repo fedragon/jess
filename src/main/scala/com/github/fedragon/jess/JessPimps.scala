@@ -20,7 +20,7 @@ trait AsString {
 	this: PimpedJsField =>
 		def is(expected: String) = (name, JsStringRule(s => s == expected))
 		def isNot(expected: String) = (name, JsStringRule(s => s != expected))
-		def in(regex: String) = (name, JsStringRule(s => (regex.r findFirstIn s).nonEmpty))
+		def in(regex: String) = (name, JsStringRule(s => s.matches(regex)))
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
 
