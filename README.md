@@ -116,8 +116,7 @@ val result =
 ### Useful tips
 * Rules on arrays are not index-based: if your rule wants to check if the array contains a 789 value, then this rule will be applied to any numeric value inside the array and it will be considered successful if at least one of them satisfies the rule.
 * If you create a rule for a field (let's call it "my-field") but that field doesn't exist in your json document, a JsUndefined("my-field") will be returned as result of the validation;
-* If you need a test different than "this equals that", which is what the "is" method expands to, in this moment you cannot use the short syntax and you have to write the rule yourself like in one of the examples above; more DSL shortcuts are on their way.
-* If you want to check whether a field has a null or an empty string ("") value, you can use the "isNull" method
+* If you need a rule different from any of the pre-defined ones, you can write your own function using the non-DSL syntax (e.g. "1" asNum n => n > 3)
 
 ### Validation Result
 
