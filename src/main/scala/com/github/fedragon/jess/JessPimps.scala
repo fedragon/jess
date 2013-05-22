@@ -23,7 +23,7 @@ trait AsString {
 		def is(expected: String) = asStr(s => s == expected)
 		def isNot(expected: String) = asStr(s => s != expected)
 		def in(regex: String) = asStr(s => s.matches(regex))
-
+		
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
 
