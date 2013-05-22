@@ -2,10 +2,10 @@ package com.github.fedragon.jess
 
 import JessPredef._
 
-abstract sealed class JsValueRule {
+abstract class JsValueRule {
 	def apply(js: JsValue): Result[JsValue]
 
-	def invalidInput(input: JsValue) = throw new IllegalArgumentException(s"Invalid input: $input")
+	private[jess] def invalidInput(input: JsValue) = throw new IllegalArgumentException(s"Invalid input: $input")
 }
 
 case class JsBooleanRule(f: Boolean) extends JsValueRule {

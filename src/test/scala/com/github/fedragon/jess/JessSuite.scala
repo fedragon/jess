@@ -33,10 +33,12 @@ class JessSuite extends FunSuite {
         new JsArray(Seq(new JsNumber(222L), new JsNumber(333f)))
       ))
     )
-    
+
+    val jsNull = ("6", JsNull)
+    val jsStringEmpty = ("7", new JsString(""))
 
     val jsonFull = new JsObject(
-      Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean)
+      Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean, jsNull, jsStringEmpty)
     )
   }
 
@@ -127,7 +129,9 @@ class JessSuite extends FunSuite {
               false
             ),
             "4" is "BBB",
-            "5" is false
+            "5" is false,
+            "6" isNull,
+            "7" isNull
           )
         }
 
