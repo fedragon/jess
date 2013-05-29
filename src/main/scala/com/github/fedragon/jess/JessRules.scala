@@ -2,6 +2,26 @@ package com.github.fedragon.jess
 
 import JessPredef._
 
+object n {
+	def ?= (expected: BigDecimal) = JsNumberRule(n => n == expected)
+	def != (expected: BigDecimal) = JsNumberRule(n => n != expected)
+	def < (expected: BigDecimal) = JsNumberRule(n => n < expected)
+	def <= (expected: BigDecimal) = JsNumberRule(n => n <= expected)
+	def > (expected: BigDecimal) = JsNumberRule(n => n > expected)
+	def >= (expected: BigDecimal) = JsNumberRule(n => n >= expected)
+}
+
+object s {
+	def ?= (expected: String) = JsStringRule(s => s == expected)
+	def != (expected: String) = JsStringRule(s => s != expected)
+	def in (regex: String) = JsStringRule(s => s.matches(regex))
+}
+
+object b {
+	def ?= (expected: Boolean) = JsBooleanRule(expected)
+	def != (expected: Boolean) = JsBooleanRule(!expected)
+}
+
 abstract class JsValueRule {
 	def apply(js: JsValue): Result[JsValue]
 

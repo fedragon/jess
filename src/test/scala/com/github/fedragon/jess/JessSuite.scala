@@ -117,8 +117,8 @@ class JessSuite extends FunSuite {
               "2.2" is "AAA"
             ),
             "3" is array (
-              789,
-              "CCC",
+              n ?= 789,
+              s ?= "CCC",
               obj (
                 "3.1" is 111d,
                 "3.2" is "AAA"
@@ -126,7 +126,7 @@ class JessSuite extends FunSuite {
               array (
                 222L, 333f
               ),
-              false
+              b ?= false
             ),
             "4" is "BBB",
             "5" is false,
@@ -170,8 +170,8 @@ class JessSuite extends FunSuite {
               "2.1" is 456.7
             ),
             "3" is array (
-              789,
-              false,
+              n <= 789,
+              b ?= false,
               obj (
                 "a" is "something",
                 "b" isNull,
