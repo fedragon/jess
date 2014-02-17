@@ -1,6 +1,7 @@
 package com.github.fedragon.jess
 
 import JessPredef._
+import scala.util.matching.Regex
 
 trait AsBoolean {
 	this: PimpedJsField =>
@@ -28,6 +29,7 @@ trait AsString {
 		def is(expected: String) = asStr(s => s == expected)
 		def isNot(expected: String) = asStr(s => s != expected)
 		def in(regex: String) = asStr(s => s.matches(regex))
+		def in(regex: Regex) = asStr(s => regex.findFirstIn(s).nonEmpty)
 
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
@@ -42,6 +44,7 @@ trait AsArray {
 trait AsObject {
 	this: PimpedJsField =>
 		def is(seq: Validator*) = (name, JsObjectRule(seq))
+		def is(seq: JsObjectRule) = (name, seq)
 		
 		def asObj(seq: Validator*) = (name, JsObjectRule(seq))
 }
@@ -53,12 +56,10 @@ trait AsNull {
 
 				def apply(js: JsValue): Result[JsValue] = {
 					js match {
-						case JsNull => 
-							Ok
+						case JsNull => Ok
 						case str: JsString => 
 							JsStringRule(s => s == null || s.trim == "").apply(str)
-						case _ => 
-							Nok(Seq(js))
+						case _ => Nok(Seq(js))
 					}
 				}
 			}
