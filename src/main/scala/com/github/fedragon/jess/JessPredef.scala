@@ -12,7 +12,7 @@ object JessPredef {
   }
 
   case object Ok extends Result[Nothing] {
-    def passed: Boolean = true
+    val passed: Boolean = true
   }
 
   case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
@@ -34,11 +34,11 @@ object JessPredef {
    * Applies the rule to the js document and returns its result. 
    * Throws an IllegalArgumentException if provided string is not a valid json document.
    *
-   * @param js json value to validate
+   * @param jsonString json value to validate
    * @param rule rule to use to validate the json value
    * @return validation result
    *
-   * @throw IllegalArgumentException if provided string is not a valid json document
+   * @throws IllegalArgumentException if provided string is not a valid json document
    */
   def verifyThat (jsonString: String)(rule: JsObjectRule): Result[JsValue] = {
     Try(parse(jsonString)) match {
@@ -54,27 +54,23 @@ object JessPredef {
    * @param g additional (optional) validators
    * @return created object rule
    */
-	def obj (f: Validator, g: Validator*): JsObjectRule = JsObjectRule(Seq(f) ++ g)
+	def obj (f: Validator, g: Validator*): JsObjectRule = JsObjectRule(f +: g)
 
   /**
    * Creates and returns an array rule combining the provided validators.
    *
-   * @param f pair (field_name, rule)
-   * @param g additional (optional) validators
+   * @param values list of values to check
    * @return created array rule
    */
   def array (values: Any*) = {
-    val rules =
-      values map { expected =>
-        expected match {
-          case b: Boolean => JsBooleanRule(b)
-          case s: String => JsStringRule(t => t == s)
-          case jr: JsValueRule => jr
-          case BigDecimalExtractor(bd) => JsNumberRule(n => n == bd)
-        }
+	  JsArrayRule(
+      values map {
+        case b: Boolean => JsBooleanRule(b)
+        case s: String => JsStringRule(t => t == s)
+        case jr: JsValueRule => jr
+        case BigDecimalExtractor(bd) => JsNumberRule(n => n == bd)
       }
-
-    JsArrayRule(rules)
+	  )
   }
 
 	// Play JSon type aliases

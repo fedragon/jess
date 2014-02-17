@@ -22,14 +22,13 @@ class JessRulesSuite extends FunSuite {
       )
     )
 
+	  val jsArray2 = new JsArray(Seq(jsNumber456))
+
     val jsArray = new JsArray(
       Seq(
-        jsNumber123, jsBooleanTrue, jsStringJa, jsObject, jsArray2
+        jsNumber123, jsNumber456, jsBooleanTrue, jsStringJa, jsObject, jsArray2
       )
     )
-
-    val jsArray2 = new JsArray(
-      Seq(jsNumber456))
   }
 
   test("JsBooleanRule should work if actual input matches expected") {
@@ -122,7 +121,7 @@ class JessRulesSuite extends FunSuite {
       val numRule = JsNumberRule(n => n == 123)
       val strRule = JsStringRule(s => s == "Ja")
 
-      val objRule = JsObjectRule(Seq(('a, numRule), ('b, strRule)))
+      val objRule = JsObjectRule(Seq('a -> numRule, 'b -> strRule))
       assert(objRule(jsObject).passed === true)
     }
   }
@@ -133,7 +132,7 @@ class JessRulesSuite extends FunSuite {
       val okNumRule = JsNumberRule(n => n == 123)
       val failStrRule = JsStringRule(s => s == "Nee")
 
-      val objRule = JsObjectRule(Seq(('a, okNumRule), ('b, failStrRule)))
+      val objRule = JsObjectRule(Seq('a -> okNumRule, 'b -> failStrRule))
       assert(objRule(jsObject).passed === false)
     }
   }
@@ -143,7 +142,7 @@ class JessRulesSuite extends FunSuite {
     new Data {
       val okNumRule = JsNumberRule(n => n == 123)
 
-      val objRule = JsObjectRule(Seq(('a, okNumRule), ('z, okNumRule)))
+      val objRule = JsObjectRule(Seq('a -> okNumRule, 'z -> okNumRule))
       assert(objRule(jsObject).passed === false)
     }
   }
@@ -152,7 +151,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val thrown = intercept[IllegalArgumentException] {
-        val objRule = JsObjectRule(Seq(('a, JsNumberRule(n => n == 123))))
+        val objRule = JsObjectRule(Seq('a -> JsNumberRule(n => n == 123)))
         val wrongInput: JsValue = jsNumber123
         objRule(wrongInput)
       }

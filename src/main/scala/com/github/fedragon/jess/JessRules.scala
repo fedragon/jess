@@ -8,11 +8,11 @@ abstract class JsValueRule {
 	private[jess] def invalidInput(input: JsValue) = throw new IllegalArgumentException(s"Invalid input: $input")
 }
 
-case class JsBooleanRule(f: Boolean) extends JsValueRule {
+case class JsBooleanRule(b: Boolean) extends JsValueRule {
 	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case bool: JsBoolean => 
-				if (f == bool.value) Ok
+				if (b == bool.value) Ok
 				else Nok(Seq(bool))
 			case other => invalidInput(other)
 		}
@@ -41,32 +41,25 @@ case class JsStringRule(f: String => Boolean) extends JsValueRule {
 	}	
 }
 
-trait ComplexRule {
-	def compact (results: Seq[Result[JsValue]]): Result[JsValue] = {
-		def compact (res: Seq[Result[JsValue]], failed: Seq[JsValue]): Result[JsValue] = {
-			if(res.isEmpty) {
-				failed match {
-					case Seq() => Ok
-					case fields => Nok(fields)
-				}
-			} else {
-				res.head match {
-					case Ok => compact (res.tail, failed)
-					case Nok(fields) => compact (res.tail, failed ++ fields)
-				}
+trait Reduce {
+	def reduce (results: Seq[Result[JsValue]]): Result[JsValue] = {
+		results reduceLeft { (a, b) =>
+			(a, b) match {
+				case (nok @ Nok(_), Ok) => nok
+				case (Ok, nok @ Nok(_)) => nok
+				case (Ok, Ok) => a
+				case (nok1 @ Nok(_), nok2 @ Nok(_)) => Nok(nok1.failed ++ nok2.failed)
 			}
 		}
-
-		compact (results, Seq.empty)
 	}
 }
 
-case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with ComplexRule {
+case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Reduce {
 
 	def apply(js: JsValue): Result[JsValue] = {
 		js match {
 			case obj: JsObject =>
-				val results = 
+				reduce (
 					validators map { validator =>
 						obj \ validator._1.name match {
 							case _: JsUndefined => 
@@ -75,14 +68,13 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Com
 								validator._2(value)
 						}
 					}
-
-				compact (results)
+				)
 			case other => invalidInput(other)
 		}
 	}
 }
 
-case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with ComplexRule {
+case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Reduce {
 
 	def apply(js: JsValue): Result[JsValue] = {
 		val results =
@@ -94,34 +86,28 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Complex
 				case other => invalidInput(other)
 			}
 
-		compact (results)
+		reduce (results)
 	}
 
 	private def getRuleResult(array: JsArray, rule: JsValueRule): Result[JsValue] = {
 		val applicableFields = filterFieldsByRule(array.value, rule)
 
 		val validField: Option[Result[JsValue]] =
-			applicableFields.map(field => rule(field))
-				.find { res => 
-					res match {
-						case Ok => true
-						case _ => false
-					}
-				}
+			applicableFields.map(rule(_)).find {
+				case Ok => true
+				case _ => false
+			}
 
-		validField match {
-			case Some(result) => result
-			case None => Nok(Seq(array))
-		}
+		validField.getOrElse(Nok(Seq(array)))
 	}
 
 	private def filterFieldsByRule(fields: Seq[JsValue], rule: JsValueRule): Seq[JsValue] = {
 		rule match {
-			case a: JsArrayRule => fields.filter(f => f.isInstanceOf[JsArray])
-			case b: JsBooleanRule => fields.filter(f => f.isInstanceOf[JsBoolean])
-			case n: JsNumberRule => fields.filter(f => f.isInstanceOf[JsNumber])
-			case o: JsObjectRule => fields.filter(f => f.isInstanceOf[JsObject])
-			case s: JsStringRule => fields.filter(f => f.isInstanceOf[JsString])
+			case _: JsArrayRule => fields.filter(f => f.isInstanceOf[JsArray])
+			case _: JsBooleanRule => fields.filter(f => f.isInstanceOf[JsBoolean])
+			case _: JsNumberRule => fields.filter(f => f.isInstanceOf[JsNumber])
+			case _: JsObjectRule => fields.filter(f => f.isInstanceOf[JsObject])
+			case _: JsStringRule => fields.filter(f => f.isInstanceOf[JsString])
 			case other => throw new IllegalArgumentException(s"Unsupported rule: $other")
 		}
 	}
