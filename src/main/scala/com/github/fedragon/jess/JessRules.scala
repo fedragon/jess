@@ -68,9 +68,9 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Com
 			case obj: JsObject =>
 				val results = 
 					validators map { validator =>
-						obj \ validator._1 match {
+						obj \ validator._1.name match {
 							case _: JsUndefined => 
-								Nok(Seq(new JsUndefined(validator._1)))
+								Nok(Seq(new JsUndefined(validator._1.name)))
 							case value @ _ =>
 								validator._2(value)
 						}

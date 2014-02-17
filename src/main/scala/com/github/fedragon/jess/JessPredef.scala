@@ -19,7 +19,7 @@ object JessPredef {
     def passed: Boolean = false
   }
 
-	type Validator = (String, JsValueRule)
+	type Validator = (Symbol, JsValueRule)
 
   /**
    * Applies the rule to the js value and returns its result.

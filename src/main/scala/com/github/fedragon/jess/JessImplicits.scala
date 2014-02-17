@@ -67,7 +67,7 @@ trait AsNull {
 		}
 }
 
-class PimpedJsField(val name: String) 
+class PimpedJsField(val name: Symbol) 
 	extends AsBoolean 
 		with AsNumber
 		with AsString
@@ -75,6 +75,6 @@ class PimpedJsField(val name: String)
 		with AsArray 
 		with AsNull
 
-object JessPimps {
-	implicit def stringToPimpedJsField(fieldName: String) = new PimpedJsField(fieldName)
+object JessImplicits {
+	implicit def symbolToPimpedJsField(fieldName: Symbol) = new PimpedJsField(fieldName)
 }

@@ -10,32 +10,32 @@ class JessSuite extends FunSuite {
   import JessPredef._
 
   trait Data {
-    val jsNumber = ("1", new JsNumber(123))
-    val jsString = ("4", new JsString("BBB"))
-    val jsBoolean = ("5", new JsBoolean(false))
+    val jsNumber = ("a", new JsNumber(123))
+    val jsString = ("d", new JsString("BBB"))
+    val jsBoolean = ("e", new JsBoolean(false))
 
-    val jsObject = ("2", new JsObject(
+    val jsObject = ("b", new JsObject(
       Seq(
-        ("2.1", new JsNumber(456)),
-        ("2.2", new JsString("AAA"))
+        ("b1", new JsNumber(456)),
+        ("b2", new JsString("AAA"))
       ))
     )
-    val jsArray =  ("3", new JsArray(
+    val jsArray =  ("c", new JsArray(
       Seq(
         new JsNumber(789), 
         new JsString("CCC"),
         new JsObject(
           Seq(
-            ("3.1", new JsNumber(111d)),
-            ("3.2", new JsString("AAA"))
+            ("c1", new JsNumber(111d)),
+            ("c2", new JsString("AAA"))
           )),
         new JsBoolean(false),
         new JsArray(Seq(new JsNumber(222L), new JsNumber(333f)))
       ))
     )
 
-    val jsNull = ("6", JsNull)
-    val jsStringEmpty = ("7", new JsString(""))
+    val jsNull = ("f", JsNull)
+    val jsStringEmpty = ("g", new JsString(""))
 
     val jsonFull = new JsObject(
       Seq(jsNumber, jsObject, jsArray, jsString, jsBoolean, jsNull, jsStringEmpty)
@@ -45,12 +45,12 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate one rule") {    
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
       
       val result = 
         verifyThat (jsonFull) { 
           obj ( 
-            "1" asNum (n => n == 123)
+            'a asNum (n => n == 123)
           )
         }
 
@@ -65,12 +65,12 @@ class JessSuite extends FunSuite {
   test("Jess should fail if at least one rule is not verified") {    
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
       
       val result = 
         verifyThat (jsonFull) { 
           obj ( 
-            "4" asStr (s => s == "")
+            'd asStr (s => s == "")
           )
         }
 
@@ -81,21 +81,21 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate multiple rules") {    
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
       
       val result = 
         verifyThat (jsonFull) { 
           obj ( 
-            "1" asNum (n => n == 123),
-            "2" asObj (
-              "2.1" asNum (n => n == 456),
-              "2.2" asStr (s => s == "AAA")
+            'a asNum (n => n == 123),
+            'b asObj (
+              'b1 asNum (n => n == 456),
+              'b2 asStr (s => s == "AAA")
             ),
-            "3" asArray (
+            'c asArray (
               JsNumberRule(n => n == 789)
             ),
-            "4" asStr (s => s == "BBB"),
-            "5" asBool (false)
+            'd asStr (s => s == "BBB"),
+            'e asBool (false)
           )
         }
 
@@ -106,32 +106,32 @@ class JessSuite extends FunSuite {
   test("Jess should be to validate multiple rules with pimped syntax") {
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
       
       val result = 
         verifyThat (jsonFull) { 
           obj ( 
-            "1" is 123,
-            "2" is (
-              "2.1" isBetween (123, 456),
-              "2.2" is "AAA"
+            'a is 123,
+            'b is (
+              'b1 isBetween (123, 456),
+              'b2 is "AAA"
             ),
-            "3" is array (
+            'c is array (
               789,
               "CCC",
               obj (
-                "3.1" is 111d,
-                "3.2" is "AAA"
+                'c1 is 111d,
+                'c2 is "AAA"
               ),
               array (
                 222L, 333f
               ),
               false
             ),
-            "4" is "BBB",
-            "5" is false,
-            "6" isNull,
-            "7" isNull
+            'd is "BBB",
+            'e is false,
+            'f isNull,
+            'g isNull
           )
         }
 
@@ -142,15 +142,15 @@ class JessSuite extends FunSuite {
   test("Jess should be able to validate a json string") {
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
 
       val jsonString = 
         """{ 
-          "1" : 123, 
-          "2" : { 
-            "2.1": 456.7 
+          "a" : 123, 
+          "b" : { 
+            "b1": 456.7 
           },
-          "3" : [
+          "c" : [
             789,
             false,
             {
@@ -159,26 +159,26 @@ class JessSuite extends FunSuite {
               "c" : ""
             }
           ],
-          "4" : "abcd"
+          "d" : "abcd"
         }"""
 
       val result = 
         verifyThat (jsonString) { 
           obj ( 
-            "1" is 123,
-            "2" is (
-              "2.1" is 456.7
+            'a is 123,
+            'b is (
+              'b1 is 456.7
             ),
-            "3" is array (
+            'c is array (
               789,
               false,
               obj (
-                "a" is "something",
-                "b" isNull,
-                "c" isNull
+                'a is "something",
+                'b isNull,
+                'c isNull
               )
             ),
-            "4" in "[a-z]*"
+            'd in "[a-z]*"
           )
         }
 
@@ -189,12 +189,12 @@ class JessSuite extends FunSuite {
   test("Jess should crash on invalid json string") {
 
     new Data {
-      import JessPimps._
+      import JessImplicits._
       
       val jsonString = 
         """{ 
-          "1": 123, 
-          "2": { 
+          "a": 123, 
+          "b": { 
             aaaaaaaaaaa 
           } 
         }"""
@@ -202,7 +202,7 @@ class JessSuite extends FunSuite {
       val thrown = intercept[IllegalArgumentException] { 
         verifyThat (jsonString) { 
           obj ( 
-            "1" is 123
+            'a is 123
           )
         }
       }
