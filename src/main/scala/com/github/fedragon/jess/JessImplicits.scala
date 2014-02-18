@@ -3,7 +3,7 @@ package com.github.fedragon.jess
 import JessPredef._
 import scala.util.matching.Regex
 
-trait AsBoolean {
+trait JsBooleanOps {
 	this: PimpedJsField =>
 		def is(expected: Boolean) = asBool(expected)
 		def isNot(expected: Boolean) = asBool(!expected)
@@ -11,7 +11,7 @@ trait AsBoolean {
 		def asBool(f: Boolean) = (name, JsBooleanRule(f))
 }
 
-trait AsNumber {
+trait JsNumberOps {
 	this: PimpedJsField =>
 		def is(expected: BigDecimal) = asNum(n => n == expected)
 		def isNot(expected: BigDecimal) = asNum(n => n != expected)
@@ -24,7 +24,7 @@ trait AsNumber {
 		def asNum(f: BigDecimal => Boolean) = (name, JsNumberRule(f))
 }
 
-trait AsString {
+trait JsStringOps {
 	this: PimpedJsField =>
 		def is(expected: String) = asStr(s => s == expected)
 		def isNot(expected: String) = asStr(s => s != expected)
@@ -34,14 +34,14 @@ trait AsString {
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
 
-trait AsArray {
+trait JsArrayOps {
 	this: PimpedJsField =>
 		def is(rule: JsArrayRule) = (name, rule)
 
 	  def asArray(seq: JsValueRule*) = (name, JsArrayRule(seq))
 }
 
-trait AsObject {
+trait JsObjectOps {
 	this: PimpedJsField =>
 		def is(seq: Validator*) = (name, JsObjectRule(seq))
 		def is(seq: JsObjectRule) = (name, seq)
@@ -49,11 +49,10 @@ trait AsObject {
 		def asObj(seq: Validator*) = (name, JsObjectRule(seq))
 }
 
-trait AsNull {
+trait JsNullOps {
 	this: PimpedJsField =>
 		def isNull = {
 			val rule = new JsValueRule {
-
 				def apply(js: JsValue): Result[JsValue] = {
 					js match {
 						case JsNull => Ok
@@ -69,12 +68,12 @@ trait AsNull {
 }
 
 class PimpedJsField(val name: Symbol) 
-	extends AsBoolean 
-		with AsNumber
-		with AsString
-		with AsObject
-		with AsArray 
-		with AsNull
+	extends JsBooleanOps 
+		with JsNumberOps
+		with JsStringOps
+		with JsObjectOps
+		with JsArrayOps 
+		with JsNullOps
 
 object JessImplicits {
 	implicit def symbolToPimpedJsField(fieldName: Symbol) = new PimpedJsField(fieldName)
