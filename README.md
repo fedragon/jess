@@ -16,7 +16,7 @@ Example:
 
     ```scala
     import JessPredef._
-    import JessImplicits._
+    import JessOps._
 
     val jsonString =
         """{

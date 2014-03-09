@@ -61,11 +61,11 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Red
 			case obj: JsObject =>
 				reduce (
 					validators map { validator =>
-						obj \ validator._1.name match {
+						obj \ validator.field.name match {
 							case _: JsUndefined => 
-								Nok(Seq(new JsUndefined(validator._1.name)))
+								Nok(Seq(new JsUndefined(validator.field.name)))
 							case value @ _ =>
-								validator._2(value)
+								validator.rule(value)
 						}
 					}
 				)
@@ -79,10 +79,7 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Reduce 
 	def apply(js: JsValue): Result[JsValue] = {
 		val results =
 			js match {
-				case array: JsArray =>
-					rules map { rule =>
-						getRuleResult(array, rule)
-					}
+				case array: JsArray => rules map (rule => getRuleResult(array, rule))
 				case other => invalidInput(other)
 			}
 
@@ -103,11 +100,11 @@ case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Reduce 
 
 	private def filterFieldsByRule(fields: Seq[JsValue], rule: JsValueRule): Seq[JsValue] = {
 		rule match {
-			case _: JsArrayRule => fields.filter(f => f.isInstanceOf[JsArray])
-			case _: JsBooleanRule => fields.filter(f => f.isInstanceOf[JsBoolean])
-			case _: JsNumberRule => fields.filter(f => f.isInstanceOf[JsNumber])
-			case _: JsObjectRule => fields.filter(f => f.isInstanceOf[JsObject])
-			case _: JsStringRule => fields.filter(f => f.isInstanceOf[JsString])
+			case _: JsArrayRule   => fields.collect { case jsa: JsArray => jsa }
+			case _: JsBooleanRule => fields.collect { case jsb: JsBoolean => jsb }
+			case _: JsNumberRule  => fields.collect { case jsn: JsNumber => jsn }
+			case _: JsObjectRule  => fields.collect { case jso: JsObject => jso }
+			case _: JsStringRule  => fields.collect { case jss: JsString => jss }
 			case other => throw new IllegalArgumentException(s"Unsupported rule: $other")
 		}
 	}

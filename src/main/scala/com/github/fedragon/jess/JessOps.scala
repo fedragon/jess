@@ -75,6 +75,6 @@ class PimpedJsField(val name: Symbol)
 		with JsArrayOps 
 		with JsNullOps
 
-object JessImplicits {
+object JessOps {
 	implicit def symbolToPimpedJsField(fieldName: Symbol) = new PimpedJsField(fieldName)
 }

@@ -19,7 +19,9 @@ object JessPredef {
     def passed: Boolean = false
   }
 
-	type Validator = (Symbol, JsValueRule)
+  class Validator(val field: Symbol, val rule: JsValueRule)
+
+  implicit def pairToValidator(pair: (Symbol, JsValueRule)) = new Validator(pair._1, pair._2)
 
   /**
    * Applies the rule to the js value and returns its result.
@@ -69,6 +71,7 @@ object JessPredef {
         case s: String => JsStringRule(t => t == s)
         case jr: JsValueRule => jr
         case BigDecimalExtractor(bd) => JsNumberRule(n => n == bd)
+        case other => throw new IllegalArgumentException(s"Invalid value: $other")
       }
 	  )
   }
@@ -89,17 +92,15 @@ object JessPredef {
 
   private object BigDecimalExtractor {
     def unapply(v: Any): Option[BigDecimal] = {
-      val result =
-        v match {
-          case bd: BigDecimal => bd
-          case s: Short => BigDecimal(s)
-          case i: Int => BigDecimal(i)
-          case l: Long => BigDecimal(l)
-          case d: Double => BigDecimal(d)
-          case f: Float => BigDecimal(f)
-          case other => throw new IllegalArgumentException(s"Invalid value: $other")
-        }
-      Some(result)
+      v match {
+        case bd: BigDecimal => Some(bd)
+        case s: Short => Some(BigDecimal(s))
+        case i: Int => Some(BigDecimal(i))
+        case l: Long => Some(BigDecimal(l))
+        case d: Double => Some(BigDecimal(d))
+        case f: Float => Some(BigDecimal(f))
+        case other => None
+      }
     }
   }
 }

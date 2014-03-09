@@ -8,7 +8,7 @@ import org.scalatest.junit.JUnitRunner
 class JessSyntaxSuite extends FunSuite {
 
   import JessPredef._
-	import JessImplicits._
+	import JessOps._
 
   trait Data {
     val jsNumber = ("a", new JsNumber(123))
