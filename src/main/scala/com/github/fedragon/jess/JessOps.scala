@@ -3,6 +3,8 @@ package com.github.fedragon.jess
 import JessPredef._
 import scala.util.matching.Regex
 
+import scalaz._, scalaz.Scalaz._
+
 trait JsBooleanOps {
 	this: PimpedJsField =>
 		def is(expected: Boolean) = asBool(expected)
@@ -28,10 +30,10 @@ trait JsNumberOps {
 
 trait JsStringOps {
 	this: PimpedJsField =>
-		def is(expected: String) = asStr(s => s == expected)
-		def isNot(expected: String) = asStr(s => s != expected)
-		def in(regex: String) = asStr(s => s.matches(regex))
-		def in(regex: Regex) = asStr(s => regex.findFirstIn(s).nonEmpty)
+		def is(expected: String) = asStr(_ == expected)
+		def isNot(expected: String) = asStr(_ != expected)
+		def in(regex: String) = asStr(_.matches(regex))
+		def in(regex: Regex) = asStr(regex.findFirstIn(_).nonEmpty)
 
 		def asStr(f: String => Boolean) = (name, JsStringRule(f))
 }
@@ -55,12 +57,12 @@ trait JsNullOps {
 	this: PimpedJsField =>
 		def isNull = {
 			val rule = new JsValueRule {
-				def apply(js: JsValue): Result[JsValue] = {
+				def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 					js match {
-						case JsNull => Ok
+						case JsNull => ().successNel[JsValue]
 						case str: JsString =>
-							JsStringRule(s => s == null || s.trim == "").apply(str)
-						case _ => Nok(Seq(js))
+							JsStringRule(s => s == null || s.trim.isEmpty).apply(str)
+						case other => other.failureNel[Unit]
 					}
 				}
 			}

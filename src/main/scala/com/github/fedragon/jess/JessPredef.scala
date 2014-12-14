@@ -2,22 +2,12 @@ package com.github.fedragon.jess
 
 import scala.util.{Try, Success, Failure}
 
+import scalaz._, scalaz.Scalaz._
+
 /**
  * Jess common classes, utility methods and type aliases
  */
 object JessPredef {
-
-  trait Result[+A] {
-    def passed: Boolean
-  }
-
-  case object Ok extends Result[Nothing] {
-    val passed: Boolean = true
-  }
-
-  case class Nok (failed: Seq[JsValue]) extends Result[JsValue] {
-    def passed: Boolean = false
-  }
 
   class Validator(val field: Symbol, val rule: JsValueRule)
 
@@ -30,22 +20,20 @@ object JessPredef {
    * @param rule rule to use to validate the json value
    * @return validation result
    */
-	def verifyThat (js: JsValue)(rule: JsObjectRule): Result[JsValue] = rule(js)
+	def verifyThat (js: JsValue)(rule: JsObjectRule): ValidationNel[JsValue, Unit] = rule(js)
 
   /**
-   * Applies the rule to the js document and returns its result. 
-   * Throws an IllegalArgumentException if provided string is not a valid json document.
+   * Applies the rule to the js document and returns the validation result.
    *
    * @param jsonString json value to validate
    * @param rule rule to use to validate the json value
    * @return validation result
    *
-   * @throws IllegalArgumentException if provided string is not a valid json document
    */
-  def verifyThat (jsonString: String)(rule: JsObjectRule): Result[JsValue] = {
+  def verifyThat (jsonString: String)(rule: JsObjectRule): ValidationNel[JsValue, Unit]  = {
     Try(parse(jsonString)) match {
       case Success(parsedJson) => rule(parsedJson)
-      case Failure(_) => throw new IllegalArgumentException("Invalid json!")
+      case Failure(_) => new JsUndefined("Invalid json!").failureNel[Unit]
     }
   }
 

@@ -4,6 +4,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
+import scalaz._, scalaz.Scalaz._
+
 @RunWith(classOf[JUnitRunner])
 class JessRulesSuite extends FunSuite {
 
@@ -14,7 +16,7 @@ class JessRulesSuite extends FunSuite {
     val jsNumber123 = new JsNumber(123)
     val jsNumber456 = new JsNumber(456)
     val jsStringJa = new JsString("Ja")
-    
+
     val jsObject = new JsObject(
       Seq(
         ("a", jsNumber123),
@@ -35,7 +37,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsBooleanRule(true)
-      assert(rule(jsBooleanTrue).passed === true) 
+      assert(rule(jsBooleanTrue).isSuccess)
     }
   }
 
@@ -43,19 +45,17 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsBooleanRule(false)
-      assert(rule(jsBooleanTrue).passed === false)
+      assert(rule(jsBooleanTrue).isFailure)
     }
   }
 
   test("JsBooleanRule should throw exception on invalid input") {
 
     new Data {
-      val thrown = intercept[IllegalArgumentException] {
-        val rule = JsBooleanRule(false)
-        val wrongInput: JsValue = jsStringJa
-        rule(wrongInput)
-      }
-      assert(thrown != null)      
+      val rule = JsBooleanRule(false)
+      val wrongInput: JsValue = jsStringJa
+
+      assert(rule(wrongInput).isFailure)
     }
   }
 
@@ -63,7 +63,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsNumberRule(n => n == 123)
-      assert(rule(jsNumber123).passed === true) 
+      assert(rule(jsNumber123).isSuccess)
     }
   }
 
@@ -71,19 +71,17 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsNumberRule(n => n == 0)
-      assert(rule(jsNumber123).passed === false)
+      assert(rule(jsNumber123).isFailure)
     }
   }
 
   test("JsNumberRule should throw exception on invalid input") {
 
     new Data {
-      val thrown = intercept[IllegalArgumentException] {
-        val rule = JsNumberRule(n => n == 123)
-        val wrongInput: JsValue = jsStringJa
-        rule(wrongInput)
-      }
-      assert(thrown != null)      
+      val rule = JsNumberRule(n => n == 123)
+      val wrongInput: JsValue = jsStringJa
+
+      assert(rule(wrongInput).isFailure)
     }
   }
 
@@ -91,7 +89,7 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsStringRule(s => s == "Ja")
-      assert(rule(jsStringJa).passed === true)   
+      assert(rule(jsStringJa).isSuccess)
     }
   }
 
@@ -99,19 +97,17 @@ class JessRulesSuite extends FunSuite {
 
     new Data {
       val rule = JsStringRule(s => s == "Nee")
-      assert(rule(jsStringJa).passed === false)
+      assert(rule(jsStringJa).isFailure)
     }
   }
 
   test("JsStringRule should throw exception on invalid input") {
 
     new Data {
-      val thrown = intercept[IllegalArgumentException] {
-        val rule = JsStringRule(s => s == "Ja")
-        val wrongInput: JsValue = jsNumber123
-        rule(wrongInput)
-      }
-      assert(thrown != null)      
+      val rule = JsStringRule(s => s == "Ja")
+      val wrongInput: JsValue = jsNumber123
+
+      assert(rule(wrongInput).isFailure)
     }
   }
 
@@ -122,7 +118,7 @@ class JessRulesSuite extends FunSuite {
       val strRule = JsStringRule(s => s == "Ja")
 
       val objRule = JsObjectRule(Seq('a -> numRule, 'b -> strRule))
-      assert(objRule(jsObject).passed === true)
+      assert(objRule(jsObject).isSuccess)
     }
   }
 
@@ -133,7 +129,7 @@ class JessRulesSuite extends FunSuite {
       val failStrRule = JsStringRule(s => s == "Nee")
 
       val objRule = JsObjectRule(Seq('a -> okNumRule, 'b -> failStrRule))
-      assert(objRule(jsObject).passed === false)
+      assert(objRule(jsObject).isFailure)
     }
   }
 
@@ -143,23 +139,21 @@ class JessRulesSuite extends FunSuite {
       val okNumRule = JsNumberRule(n => n == 123)
 
       val objRule = JsObjectRule(Seq('a -> okNumRule, 'z -> okNumRule))
-      assert(objRule(jsObject).passed === false)
+      assert(objRule(jsObject).isFailure)
     }
   }
 
   test("JsObjectRule should throw exception on invalid input") {
 
     new Data {
-      val thrown = intercept[IllegalArgumentException] {
-        val objRule = JsObjectRule(Seq('a -> JsNumberRule(n => n == 123)))
-        val wrongInput: JsValue = jsNumber123
-        objRule(wrongInput)
-      }
-      assert(thrown != null)      
+      val objRule = JsObjectRule(Seq('a -> JsNumberRule(n => n == 123)))
+      val wrongInput: JsValue = jsNumber123
+
+      assert(objRule(wrongInput).isFailure)
     }
   }
 
-  test("JsArrayRule should work if actual input matches expected") {    
+  test("JsArrayRule should work if actual input matches expected") {
 
     new Data {
       val numRule123 = JsNumberRule(n => n == 123)
@@ -167,30 +161,28 @@ class JessRulesSuite extends FunSuite {
       val strRule = JsStringRule(s => s == "Ja")
 
       val arrayRule = JsArrayRule(Seq(numRule123, strRule, boolRule))
-      assert(arrayRule(jsArray).passed === true)
+      assert(arrayRule(jsArray).isSuccess)
     }
   }
 
-  test("JsArrayRule should fail if at least one rule fails") {    
+  test("JsArrayRule should fail if at least one rule fails") {
 
     new Data {
       val failNumRule = JsNumberRule(n => n == 0)
       val okStrRule = JsStringRule(s => s == "Ja")
 
       val arrayRule = JsArrayRule(Seq(failNumRule, okStrRule))
-      assert(arrayRule(jsArray).passed === false)
+      assert(arrayRule(jsArray).isFailure)
     }
   }
 
-  test("JsArrayRule should throw exception on invalid input") {    
+  test("JsArrayRule should throw exception on invalid input") {
 
     new Data {
-      val thrown = intercept[IllegalArgumentException] {
-        val arrayRule = JsArrayRule(Seq(JsNumberRule(n => n == 123)))
-        val wrongInput: JsValue = jsNumber456
-        arrayRule(wrongInput)
-      }
-      assert(thrown != null)      
+      val arrayRule = JsArrayRule(Seq(JsNumberRule(n => n == 123)))
+      val wrongInput: JsValue = jsNumber456
+
+      assert(arrayRule(wrongInput).isFailure)
     }
   }
 }

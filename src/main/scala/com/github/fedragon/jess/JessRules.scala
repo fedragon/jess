@@ -1,71 +1,64 @@
 package com.github.fedragon.jess
 
 import JessPredef._
+import scalaz._, scalaz.Scalaz._
 
 abstract class JsValueRule {
-	def apply(js: JsValue): Result[JsValue]
+  val succeeded = ().successNel[JsValue]
 
-	private[jess] def invalidInput(input: JsValue) = throw new IllegalArgumentException(s"Invalid input: $input")
+	def apply(js: JsValue): ValidationNel[JsValue, Unit]
+
+	private[jess] def invalidInput(input: JsValue): ValidationNel[JsValue, Unit] = input.failureNel[Unit]
 }
 
 case class JsBooleanRule(b: Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result[JsValue] = {
+	def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 		js match {
-			case bool: JsBoolean => 
-				if (b == bool.value) Ok
-				else Nok(Seq(bool))
+			case bool: JsBoolean =>
+				if (b == bool.value) succeeded
+        else bool.failureNel[Unit]
 			case other => invalidInput(other)
 		}
 	}
 }
 
 case class JsNumberRule(f: BigDecimal => Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result[JsValue] = {
+	def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 		js match {
-			case num: JsNumber => 
-				if (f(num.value)) Ok
-				else Nok(Seq(num))
+			case num: JsNumber =>
+				if (f(num.value)) succeeded
+				else num.failureNel[Unit]
 			case other => invalidInput(other)
 		}
 	}
 }
 
 case class JsStringRule(f: String => Boolean) extends JsValueRule {
-	def apply(js: JsValue): Result[JsValue] = {
+	def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 		js match {
-			case str: JsString => 
-				if (f(str.value)) Ok
-				else Nok(Seq(str))
+			case str: JsString =>
+				if (f(str.value)) succeeded
+				else str.failureNel[Unit]
 			case other => invalidInput(other)
-		}
-	}	
-}
-
-trait Reduce {
-	def reduce (results: Seq[Result[JsValue]]): Result[JsValue] = {
-		results reduceLeft { (a, b) =>
-			(a, b) match {
-				case (nok @ Nok(_), Ok) => nok
-				case (Ok, nok @ Nok(_)) => nok
-				case (Ok, Ok) => a
-				case (nok1 @ Nok(_), nok2 @ Nok(_)) => Nok(nok1.failed ++ nok2.failed)
-			}
 		}
 	}
 }
 
+trait Reduce {
+	def reduce (results: List[ValidationNel[JsValue, Unit]]): ValidationNel[JsValue, Unit] =
+    results.sequenceU.map(_.head)
+}
+
 case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Reduce {
 
-	def apply(js: JsValue): Result[JsValue] = {
+	def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 		js match {
 			case obj: JsObject =>
 				reduce (
-					validators map { validator =>
+					validators.toList.map { validator =>
 						obj \ validator.field.name match {
-							case _: JsUndefined => 
-								Nok(Seq(new JsUndefined(validator.field.name)))
-							case value @ _ =>
-								validator.rule(value)
+							case _: JsUndefined => new JsUndefined(validator.field.name).failureNel[Unit]
+							case value @ _ => validator.rule(value)
 						}
 					}
 				)
@@ -76,26 +69,26 @@ case class JsObjectRule(validators: Seq[Validator]) extends JsValueRule with Red
 
 case class JsArrayRule(rules: Seq[JsValueRule]) extends JsValueRule with Reduce {
 
-	def apply(js: JsValue): Result[JsValue] = {
+	def apply(js: JsValue): ValidationNel[JsValue, Unit] = {
 		val results =
 			js match {
-				case array: JsArray => rules map (rule => getRuleResult(array, rule))
-				case other => invalidInput(other)
+				case array: JsArray => rules map (rule => getRuleResult(array, rule)) toList
+				case other => List(invalidInput(other))
 			}
 
-		reduce (results)
+		reduce(results)
 	}
 
-	private def getRuleResult(array: JsArray, rule: JsValueRule): Result[JsValue] = {
+	private def getRuleResult(array: JsArray, rule: JsValueRule): ValidationNel[JsValue, Unit] = {
 		val applicableFields = filterFieldsByRule(array.value, rule)
 
-		val validField: Option[Result[JsValue]] =
+		val validField: Option[ValidationNel[JsValue, Unit]] =
 			applicableFields.map(rule(_)).find {
-				case Ok => true
+				case Success(_) => true
 				case _ => false
 			}
 
-		validField.getOrElse(Nok(Seq(array)))
+      validField.getOrElse(array.failureNel[Unit])
 	}
 
 	private def filterFieldsByRule(fields: Seq[JsValue], rule: JsValueRule): Seq[JsValue] = {

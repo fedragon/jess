@@ -4,6 +4,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
+import scalaz._, scalaz.Scalaz._
+
 @RunWith(classOf[JUnitRunner])
 class JessSyntaxSuite extends FunSuite {
 
@@ -23,7 +25,7 @@ class JessSyntaxSuite extends FunSuite {
     )
     val jsArray =  ("c", new JsArray(
       Seq(
-        new JsNumber(789), 
+        new JsNumber(789),
         new JsString("CCC"),
         new JsObject(
           Seq(
@@ -53,7 +55,7 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
@@ -67,7 +69,7 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
@@ -84,7 +86,7 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
@@ -97,7 +99,7 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
@@ -109,7 +111,7 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
@@ -122,16 +124,16 @@ class JessSyntaxSuite extends FunSuite {
 				)
 			}
 
-			assert(result === Ok)
+			assert(result.isSuccess)
 		}
 	}
 
   test("should validate multiple rules with pimped syntax") {
 
     new Data {
-      val result = 
-        verifyThat (jsonFull) { 
-          obj ( 
+      val result =
+        verifyThat (jsonFull) {
+          obj (
             'a is 123,
             'b is (
               'b1 isBetween (123, 456),
@@ -156,18 +158,18 @@ class JessSyntaxSuite extends FunSuite {
           )
         }
 
-      assert(result.passed === true)
+      assert(result.isSuccess)
     }
   }
 
   test("should validate a json string") {
 
     new Data {
-      val jsonString = 
-        """{ 
-          "a" : 123, 
-          "b" : { 
-            "b1": 456.7 
+      val jsonString =
+        """{
+          "a" : 123,
+          "b" : {
+            "b1": 456.7
           },
           "c" : [
             789,
@@ -181,9 +183,9 @@ class JessSyntaxSuite extends FunSuite {
           "d" : "abcd"
         }"""
 
-      val result = 
-        verifyThat (jsonString) { 
-          obj ( 
+      val result =
+        verifyThat (jsonString) {
+          obj (
             'a is 123,
             'b is (
               'b1 is 456.7
@@ -201,7 +203,7 @@ class JessSyntaxSuite extends FunSuite {
           )
         }
 
-      assert(result.passed === true)
+      assert(result.isSuccess)
     }
   }
 	test("should throw an exception on invalid json string") {
@@ -215,15 +217,14 @@ class JessSyntaxSuite extends FunSuite {
           }
         }"""
 
-			val thrown = intercept[IllegalArgumentException] {
+			val result =
 				verifyThat (jsonString) {
 					obj (
 						'a is 123
 					)
 				}
-			}
 
-			assert(thrown != null)
+			assert(result.isFailure)
 		}
 	}
 
@@ -235,15 +236,14 @@ class JessSyntaxSuite extends FunSuite {
           "a": 123
         }"""
 
-			val thrown = intercept[IllegalArgumentException] {
+			val result =
 				verifyThat (jsonString) {
 					obj (
 						'a is "aaa"
 					)
 				}
-			}
 
-			assert(thrown != null)
+			assert(result.isFailure)
 		}
 	}
 }

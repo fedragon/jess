@@ -4,6 +4,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
+import scalaz._, scalaz.Scalaz._
+
 @RunWith(classOf[JUnitRunner])
 class JessSuite extends FunSuite {
 
@@ -23,7 +25,7 @@ class JessSuite extends FunSuite {
     )
     val jsArray =  ("c", new JsArray(
       Seq(
-        new JsNumber(789), 
+        new JsNumber(789),
         new JsString("CCC"),
         new JsObject(
           Seq(
@@ -46,42 +48,37 @@ class JessSuite extends FunSuite {
   test("should validate a single rule") {
 
     new Data {
-      
-      val result = 
-        verifyThat (jsonFull) { 
-          obj ( 
+      val result =
+        verifyThat (jsonFull) {
+          obj (
             'a asNum (n => n == 123)
           )
         }
 
-      result match {
-        case Ok => true
-        case Nok(fields) => fail()
-      }
-
+      assert(result.isSuccess)
     }
   }
 
-  test("should fail if at least one rule is not verified") {    
+  test("should fail if at least one rule is not verified") {
 
     new Data {
-      val result = 
-        verifyThat (jsonFull) { 
-          obj ( 
+      val result =
+        verifyThat (jsonFull) {
+          obj (
             'd asStr (s => s == "")
           )
         }
 
-      assert(result.passed === false)
+      assert(result.isSuccess == false)
     }
   }
 
-  test("should be able to validate multiple rules") {    
+  test("should be able to validate multiple rules") {
 
     new Data {
-      val result = 
-        verifyThat (jsonFull) { 
-          obj ( 
+      val result =
+        verifyThat (jsonFull) {
+          obj (
             'a asNum (n => n == 123),
             'b asObj (
               'b1 asNum (n => n == 456),
@@ -95,7 +92,7 @@ class JessSuite extends FunSuite {
           )
         }
 
-      assert(result.passed === true)
+      assert(result.isSuccess)
     }
   }
 }
